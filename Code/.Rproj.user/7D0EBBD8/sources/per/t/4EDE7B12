@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1578685396336.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3745349590",
+    "id" : "4EDE7B12",
+    "lastKnownWriteTime" : 1587409733,
+    "last_content_update" : 1587409733333,
+    "path" : "~/Documents/Senior_Thesis_2018/Ternary-NMDS_Python/NMDS_20200110.R",
+    "project_path" : "NMDS_20200110.R",
+    "properties" : {
+        "cursorPosition" : "48,0",
+        "scrollLine" : "19",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
