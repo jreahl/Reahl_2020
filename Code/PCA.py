@@ -156,31 +156,59 @@ def generate_trainingdata(dataframe, tex):
     return initialdata, remainingdata
 
 
-def textplot(ax, x, y, label):
+def textplot(ax, tex, x, y, PCx, PCy, label):
     """
     Function to plot text on PCA/NMDS plots in a pretty way.
     ---------------------------------------------------------------------------
     ax = axis object (e.g. ax1, ax2, etc.)
+    tex = microtextures used to make PCA ordination
     x = float; x coordinate of vector
     y = float; y coordinate of vector
+    PCx = integer; indicate principal component that x-axis is using
+          PC1 = 0, PC2 = 1, PC3 = 2
+    PCy = integer; indicate principal component that y-axis is using
+          PC1 = 0, PC2 = 1, PC3 = 2
     label = string; text label
     """
     adj = 0.01  # Adjustment factor
     s = 16
-    if x > 0 and y > 0:
-        ax.text(x, y+adj, label, size=s)
-    if x > 0 and y < 0:
-        ax.text(x, y-adj, label, size=s)
-    if x < 0 and y < 0:
-        if x < -0.6:
-            ax.text(-0.6, y+adj, label, size=s)
-        else:
-            ax.text(x-(adj*5), y-(adj*2), label, size=s)
-    if x < 0 and y > 0:
-        if x < -0.55:
-            ax.text(-0.55, y+adj, label, size=s)
-        else:
-            ax.text(x-(adj*5), y+adj, label, size=s)
+    p = len(tex)
+    b_k = np.zeros(p)
+    total = np.zeros(p)
+    for i in range(p):
+        for j in range(i+1, p+1):
+            total[i] += 1/j
+        b_k[i] = (1/p)*total[i]
+    if np.square(x) > b_k[PCx] or np.square(y) > b_k[PCy]:
+        if x > 0 and y > 0:
+            ax.text(x, y+adj, label, size=s, weight='black')
+        if x > 0 and y < 0:
+            ax.text(x, y-adj, label, size=s, weight='black')
+        if x < 0 and y < 0:
+            if x < -0.6:
+                ax.text(-0.6, y+adj, label, size=s, weight='black')
+            else:
+                ax.text(x-(adj*5), y-(adj*2), label, size=s, weight='black')
+        if x < 0 and y > 0:
+            if x < -0.55:
+                ax.text(-0.55, y+adj, label, size=s, weight='black')
+            else:
+                ax.text(x-(adj*5), y+adj, label, size=s, weight='black')
+    else:
+        if x > 0 and y > 0:
+            ax.text(x, y+adj, label, size=s)
+        if x > 0 and y < 0:
+            ax.text(x, y-adj, label, size=s)
+        if x < 0 and y < 0:
+            if x < -0.6:
+                ax.text(-0.6, y+adj, label, size=s)
+            else:
+                ax.text(x-(adj*5), y-(adj*2), label, size=s)
+        if x < 0 and y > 0:
+            if x < -0.55:
+                ax.text(-0.55, y+adj, label, size=s)
+            else:
+                ax.text(x-(adj*5), y+adj, label, size=s)
 
 
 def score_sorter(pca, tex, n):
@@ -530,7 +558,7 @@ def PCAplot(dataframe, tex, groupby, label):
                         ax[i, j].arrow(0, 0, PC1, PC2, color='#000000',
                                        length_includes_head=True,
                                        head_width=0.02, overhang=0.05)
-                        textplot(ax[i, j], PC1, PC2, labels)
+                        textplot(ax[i, j], tex, PC1, PC2, 0, 1, labels)
                 elif i == 1:
                     ax[i, j].set_xlabel('PC1', size=20)
                     # ax[i, j].set_ylabel('PC3', size=20)
@@ -541,7 +569,7 @@ def PCAplot(dataframe, tex, groupby, label):
                         ax[i, j].arrow(0, 0, PC1, PC3, color='#000000',
                                  length_includes_head=True, head_width=0.02,
                                  overhang=0.05)
-                        textplot(ax[i, j], PC1, PC3, labels)
+                        textplot(ax[i, j], tex, PC1, PC3, 0, 2, labels)
                 elif i == 2:
                     ax[i, j].set_xlabel('PC2', size=20)
                     # ax[i, j].set_ylabel('PC3', size=20)
@@ -552,7 +580,7 @@ def PCAplot(dataframe, tex, groupby, label):
                         ax[i, j].arrow(0, 0, PC2, PC3, color='#000000',
                                  length_includes_head=True, head_width=0.02,
                                  overhang=0.05)
-                        textplot(ax[i, j], PC2, PC3, labels)
+                        textplot(ax[i, j], tex, PC2, PC3, 1, 2, labels)
             elif j == 2:
                 ax[i, j].set_xlim(-5, 6)
                 ax[i, j].set_ylim(-5, 6)
