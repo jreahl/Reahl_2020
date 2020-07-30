@@ -118,6 +118,6 @@ Middle Fountain Fm.,Fluvial,﻿#0072B2,Ancient,Unknown,#000000,Sweet_2010,X,8,26
 Upper Fountain Fm.,Fluvial,﻿#0072B2,Ancient,Unknown,#000000,Sweet_2010,X,3,100,0.28,0.23,0.22,0.39,0.17,0.00,0.00,0.06,0.72,0.10,0.26,NaN,0.10,0.10,0.30,0.00,0.25,0.26,0.65,0.10
 Mielupīte 1.3,Aeolian,#D55E00,Ancient,Unknown,#000000,Nartišs_2017,P,1,16,0.06,0.06,NaN,0.00,NaN,0.06,NaN,0.75,0.75,NaN,0.06,0.75,0.00,NaN,0.00,0.06,0.06,0.00,0.50,0.06
 Mielupīte 1.7,Aeolian,#D55E00,Ancient,Unknown,#000000,Nartišs_2017,P,1,18,0.06,0.06,NaN,0.06,NaN,0.06,NaN,0.75,0.75,NaN,0.06,0.75,0.00,NaN,0.00,0.06,0.06,0.50,0.06,0.00
-Fluvial sand (Devonian),Fluvial,﻿#0072B2,Ancient,Unknown,#000000,Mahaney_2001,d,21,420,0.54,0.00,NaN,0.06,0.00,0.00,0.00,0.45,0.64,0.02,0.00,0.45,0.00,0.00,0.08,0.00,0.61,0.59,0.39,0.08
+Fluvial sand (Devonian),Fluvial,﻿#0072B2,Ancient,Unknown,#F0E442,Mahaney_2001,d,21,420,0.54,0.00,NaN,0.06,0.00,0.00,0.00,0.45,0.64,0.02,0.00,0.45,0.00,0.00,0.08,0.00,0.61,0.59,0.39,0.08
 Till (Late Weichselian),Glacial,#F0E442,Ancient,Unknown,#000000,Mahaney_2001,d,29,580,0.46,0.02,NaN,0.51,0.00,0.10,0.20,0.18,0.18,0.02,0.13,0.17,0.46,0.13,0.46,0.17,0.20,0.05,0.20,0.58
 Glaciofluvial sand (Late Weichselian),Fluvial,﻿#0072B2,Ancient,Unknown,#000000,Mahaney_2001,d,3,60,0.40,0.00,NaN,0.18,0.00,0.00,0.00,0.14,0.56,0.00,0.00,0.03,0.02,0.00,0.21,0.00,0.53,0.35,0.42,0.18
