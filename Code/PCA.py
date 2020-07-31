@@ -117,8 +117,8 @@ class RepackagedData:
 
 
 def generate_trainingdata(dataframe, tex):
-    transport = ['Wind', 'Water', 'Ice']
-    sansBravika = dataframe[(dataframe['transport'] != 'Bravika Mbr') &
+    transport = ['Aeolian', 'Fluvial', 'Glacial']
+    sansBravika = dataframe[(dataframe['transport'] != 'Bravika') &
                             (dataframe['relage'] == 'Active')]
     initialdata = pd.DataFrame(columns=sansBravika.columns)
     sel_id = []
