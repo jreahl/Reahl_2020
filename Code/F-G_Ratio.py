@@ -13,7 +13,7 @@ from matplotlib.lines import Line2D
 from scipy import stats
 from sklearn.metrics import r2_score
 
-master2 = pd.read_csv('ALLDATA.csv')
+master2 = pd.read_csv('ALLDATA_F-G_test.csv')
 
 polygenetic = ['af', 'as', 'bb', 'cf', 'ff', 'ls', 'saf', 'slf', 'up']
 percussion = ['er', 'vc']
@@ -84,6 +84,7 @@ def plt_scatter_bestfit(ax, x, y, color, fg=False):
                 color=color)
         std = np.std(y)
         ax.fill_between(x, m*x + b + std, m*x + b - std, color=color, alpha=0.3)
+        print(r2)
     elif fg == True:
         ax.scatter(x, y, color=color, marker='^', facecolors='w', edgecolors=color)
         rolling = y.rolling(window=5, center=True).mean()
