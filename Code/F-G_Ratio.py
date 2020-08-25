@@ -13,7 +13,7 @@ from matplotlib.lines import Line2D
 from scipy import stats
 from sklearn.metrics import r2_score
 
-master2 = pd.read_csv('ALLDATA_F-G_test.csv')
+master2 = pd.read_csv('ALLDATA.csv')
 
 polygenetic = ['af', 'as', 'bb', 'cf', 'ff', 'ls', 'saf', 'slf', 'up']
 percussion = ['er', 'vc']

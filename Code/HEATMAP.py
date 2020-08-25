@@ -65,7 +65,7 @@ def heatmap(sampleage):
     # Plot the heatmap (subplots used dependent on 'MODERN' vs. 'ANCIENT'):
     if sampleage == 'MODERN':
         fig, ax = plt.subplots(3, 1, figsize=(15, 13),
-                               gridspec_kw={'height_ratios':[1, 1.2, 1.89]})
+                               gridspec_kw={'height_ratios':[1, 0.67, 2.11]})
     elif sampleage == 'ANCIENT':
         fig, ax = plt.subplots(4, 1, figsize=(15, 11),
                                gridspec_kw={'height_ratios':[1, 1.5, 3, 8]})
