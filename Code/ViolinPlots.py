@@ -34,6 +34,7 @@ def run_PCA(dataset, tex):
     components = ['PC' + str(x) for x in range(1, len(per_var)+1)]
     pca_df = pd.DataFrame(pca_ref, columns=components)
     pca_df['transport'] = dataset['transport']
+    pca_df['author'] = dataset['author']
     return pca_df
 
 
@@ -49,6 +50,9 @@ def calc_boxplot(dataset, ordination, transport, PC):
 
 
 transport = ['Aeolian', 'Fluvial', 'Glacial']
+authors = ['this study', 'Smith et al. (2018)',
+           'Kalińska-Nartiša et al. (2017)', 'Stevic (2015)',
+           'Sweet and Brannan (2016)', 'Mahaney et al. (1996)']
 allauthors = run_PCA(modern, tex_allauthors)
 mechanical = run_PCA(modern, tex_mechanical)
 data = [allauthors, mechanical]
@@ -151,4 +155,76 @@ for i in range(2):
 
 plt.tight_layout()
 plt.savefig('Figures/BOXPLOT.jpg', dpi=300)
+
+fig, ax = plt.subplots(2, 3, figsize=(15, 12))
+for i in range(2):
+    for j in range(3):
+        ax[i, j].tick_params(axis='both', which='major', top=True,
+                             labeltop=False, right=True, labelright=False,
+                             left=True, bottom=True, labelsize=14)
+        ax[i, j].set_xticks(np.arange(len(authors)))
+        ax[i, j].set_xticklabels(authors, rotation=23, ha='right')
+        if i == 0:
+            sns.boxplot(x='author', y='PC' + str(j+1),
+                        order=['this study', 'Smith_2018',
+                               'Kalinska-Nartisa_2017', 'Sweet_2016',
+                               'Stevic_2015', 'Mahaney_1996'],
+                        data=allauthors, ax=ax[i, j], saturation=1)
+            ax[i, j].add_patch(Rectangle((-0.5, 6.5), 6, 1, clip_on=False,
+                                         fill=True, facecolor='#648FFF',
+                                         edgecolor='w'))
+            ax[i, j].text(2.5, 7, 'PC'+str(j+1), size=18, c='w',
+                          horizontalalignment='center',
+                          verticalalignment='center', weight='bold',
+                          rotation=0)
+            if j == 0:
+                ax[i, j].add_patch(Rectangle((-1.5, -5), 0.5, 11, 
+                                         clip_on=False, fill=True,
+                                         facecolor='#648FFF', edgecolor='w'))
+                ax[i, j].text(-1.25, 1, 'All Textures', size=18, c='w',
+                              horizontalalignment='center',
+                              verticalalignment='center', weight='bold',
+                              rotation=90)
+                ax[i, j].text(-0, 5, 'A1', size=30,
+                              horizontalalignment='center',
+                              verticalalignment='center')
+            elif j == 1:
+                ax[i, j].text(-0, 5, 'A2', size=30,
+                              horizontalalignment='center',
+                              verticalalignment='center')
+            elif j == 2:
+                ax[i, j].text(-0, 5, 'A3', size=30,
+                              horizontalalignment='center',
+                              verticalalignment='center')
+        elif i == 1:
+            sns.boxplot(x='author', y='PC' + str(j+1),
+                        order=['this study', 'Smith_2018',
+                               'Kalinska-Nartisa_2017', 'Sweet_2016',
+                               'Stevic_2015', 'Mahaney_1996'],
+                        data=mechanical, ax=ax[i, j], saturation=1)
+            if j == 0:
+                ax[i, j].add_patch(Rectangle((-1.5, -5), 0.5, 11, 
+                                         clip_on=False, fill=True,
+                                         facecolor='#648FFF', edgecolor='w'))
+                ax[i, j].text(-1.25, 1, 'Mechanical', size=18, c='w',
+                              horizontalalignment='center',
+                              verticalalignment='center', weight='bold',
+                              rotation=90)
+                ax[i, j].text(-0, 5, 'B1', size=30,
+                              horizontalalignment='center',
+                              verticalalignment='center')
+            elif j == 1:
+                ax[i, j].text(-0, 5, 'B2', size=30,
+                              horizontalalignment='center',
+                              verticalalignment='center')
+            elif j == 2:
+                ax[i, j].text(-0, 5, 'B3', size=30,
+                              horizontalalignment='center',
+                              verticalalignment='center')
+        ax[i, j].set_ylim(-5, 6)
+        ax[i, j].set_ylabel('')
+        ax[i, j].set_xlabel('')
+
+plt.tight_layout()
+plt.savefig('Figures/BOXPLOT_AUTHOR.jpg', dpi=300)
 plt.show()
