@@ -38,57 +38,102 @@ def run_PCA(dataset, tex):
     return pca_df
 
 
-def calc_boxplot(dataset, ordination, transport, PC):
-    d = dataset[dataset['transport'] == transport].loc[:, PC]
+def calc_boxplot(dataset, ordination, groupcolumn, groupstr, PC):
+    d = dataset[dataset[groupcolumn] == groupstr].loc[:, PC]
     q25, q50, q75 = np.percentile(d, [25, 50, 75])
     whiskerlim = 1.5 * stats.iqr(d)
     h1 = np.min(d[d >= (q25 - whiskerlim)])
     h2 = np.max(d[d <= (q75 + whiskerlim)])
-    return pd.Series([ordination, transport, PC, q25, q50, q75, h1, h2],
-                     index=['type', 'transport', 'PC', 'q25', 'q50', 'q75',
+    return pd.Series([ordination, groupstr, PC, q25, q50, q75, h1, h2],
+                     index=['type', 'group', 'PC', 'q25', 'q50', 'q75',
                             'h1', 'h2'])
 
 
 transport = ['Aeolian', 'Fluvial', 'Glacial']
-authors = ['this study', 'Smith et al. (2018)',
-           'Kalińska-Nartiša et al. (2017)', 'Stevic (2015)',
-           'Sweet and Brannan (2016)', 'Mahaney et al. (1996)']
+authors = ['this study', 'Smith_2018', 'Kalinska-Nartisa_2017', 'Sweet_2016',
+           'Stevic_2015', 'Mahaney_1996']
 allauthors = run_PCA(modern, tex_allauthors)
 mechanical = run_PCA(modern, tex_mechanical)
 data = [allauthors, mechanical]
-statistics = pd.DataFrame(columns=['type', 'transport', 'PC', 'q25', 'q50',
+statistics = pd.DataFrame(columns=['type', 'group', 'PC', 'q25', 'q50',
                                    'q75', 'h1', 'h2'],
                           index=np.arange(0, 18))
-
+# Calculate Statistics for Aeolian, Fluvial, and Glacial Samples
 for i in range(int(len(statistics)/3)):
     for j in range(3):
         if i*3+j < 9:
             if i == 0:
                 statistics.loc[i*3+j, :] = calc_boxplot(allauthors,
-                                                        'alltextures',
+                                                        'All Textures',
+                                                        'transport',
                                                         transport[j],'PC1')
             elif i == 1:
                 statistics.loc[i*3+j, :] = calc_boxplot(allauthors,
-                                                        'alltextures',
+                                                        'All Textures',
+                                                        'transport',
                                                         transport[j], 'PC2')
             elif i == 2:
                 statistics.loc[i*3+j, :] = calc_boxplot(allauthors,
-                                                        'alltextures',
+                                                        'All Textures',
+                                                        'transport',
                                                         transport[j], 'PC3')
         elif i*3+j >= 9:
             if i == 3:
                 statistics.loc[i*3+j, :] = calc_boxplot(mechanical,
-                                                        'mechanical',
+                                                        'Mechanical',
+                                                        'transport',
                                                         transport[j],'PC1')
             elif i == 4:
                 statistics.loc[i*3+j, :] = calc_boxplot(mechanical,
-                                                        'mechanical',
+                                                        'Mechanical',
+                                                        'transport',
                                                         transport[j], 'PC2')
             elif i == 5:
                 statistics.loc[i*3+j, :] = calc_boxplot(mechanical,
-                                                        'mechanical',
+                                                        'Mechanical',
+                                                        'transport',
                                                         transport[j], 'PC3')
 statistics.to_excel('STATISTICS.xlsx')
+
+# Calculate Statistics for Authors
+statistics = pd.DataFrame(columns=['type', 'group', 'PC', 'q25', 'q50',
+                                   'q75', 'h1', 'h2'],
+                          index=np.arange(0, 36))
+for i in range(int(len(statistics)/6)):
+    for j in range(6):
+        if i*6+j < 18:
+            if i == 0:
+                statistics.loc[i*6+j, :] = calc_boxplot(allauthors,
+                                                        'All Textures',
+                                                        'author',
+                                                        authors[j],'PC1')
+            elif i == 1:
+                statistics.loc[i*6+j, :] = calc_boxplot(allauthors,
+                                                        'All Textures',
+                                                        'author',
+                                                        authors[j], 'PC2')
+            elif i == 2:
+                statistics.loc[i*6+j, :] = calc_boxplot(allauthors,
+                                                        'All Textures',
+                                                        'author',
+                                                        authors[j], 'PC3')
+        elif i*6+j >= 18:
+            if i == 3:
+                statistics.loc[i*6+j, :] = calc_boxplot(mechanical,
+                                                        'Mechanical',
+                                                        'author',
+                                                        authors[j],'PC1')
+            elif i == 4:
+                statistics.loc[i*6+j, :] = calc_boxplot(mechanical,
+                                                        'Mechanical',
+                                                        'author',
+                                                        authors[j], 'PC2')
+            elif i == 5:
+                statistics.loc[i*6+j, :] = calc_boxplot(mechanical,
+                                                        'Mechanical',
+                                                        'author',
+                                                        authors[j], 'PC3')
+statistics.to_excel('STATISTICS-AUTHOR.xlsx')
 
 fig, ax = plt.subplots(2, 3, figsize=(15, 10))
 for i in range(2):
@@ -99,7 +144,8 @@ for i in range(2):
         if i == 0:
             sns.boxplot(x='transport', y='PC' + str(j+1), order=transport,
                         palette=['#D55E00', '#0072B2', '#F0E442'],
-                        data=allauthors, ax=ax[i, j], saturation=1)
+                        data=allauthors, ax=ax[i, j], saturation=1,
+                        notch=False, bootstrap=10000)
             ax[i, j].add_patch(Rectangle((-0.5, 6.5), 3, 1, clip_on=False,
                                          fill=True, facecolor='#648FFF',
                                          edgecolor='w'))
@@ -129,7 +175,8 @@ for i in range(2):
         elif i == 1:
             sns.boxplot(x='transport', y='PC' + str(j+1), order=transport,
                         palette=['#D55E00', '#0072B2', '#F0E442'],
-                        data=mechanical, ax=ax[i, j], saturation=1)
+                        data=mechanical, ax=ax[i, j], saturation=1,
+                        notch=False, bootstrap=10000)
             if j == 0:
                 ax[i, j].add_patch(Rectangle((-1.165, -5), 0.33, 11, 
                                          clip_on=False, fill=True,
@@ -162,13 +209,13 @@ for i in range(2):
         ax[i, j].tick_params(axis='both', which='major', top=True,
                              labeltop=False, right=True, labelright=False,
                              left=True, bottom=True, labelsize=14)
-        ax[i, j].set_xticks(np.arange(len(authors)))
-        ax[i, j].set_xticklabels(authors, rotation=23, ha='right')
         if i == 0:
-            sns.boxplot(x='author', y='PC' + str(j+1),
+            sns.boxplot(x='author', y='PC' + str(j+1), # hue='transport',
                         order=['this study', 'Smith_2018',
                                'Kalinska-Nartisa_2017', 'Sweet_2016',
                                'Stevic_2015', 'Mahaney_1996'],
+                        # hue_order=['Aeolian', 'Fluvial', 'Glacial'],
+                        # palette=['#D55E00', '#0072B2', '#F0E442'],
                         data=allauthors, ax=ax[i, j], saturation=1)
             ax[i, j].add_patch(Rectangle((-0.5, 6.5), 6, 1, clip_on=False,
                                          fill=True, facecolor='#648FFF',
@@ -197,10 +244,12 @@ for i in range(2):
                               horizontalalignment='center',
                               verticalalignment='center')
         elif i == 1:
-            sns.boxplot(x='author', y='PC' + str(j+1),
+            sns.boxplot(x='author', y='PC' + str(j+1), # hue='transport',
                         order=['this study', 'Smith_2018',
                                'Kalinska-Nartisa_2017', 'Sweet_2016',
                                'Stevic_2015', 'Mahaney_1996'],
+                        # hue_order=['Aeolian', 'Fluvial', 'Glacial'],
+                        # palette=['#D55E00', '#0072B2', '#F0E442'],
                         data=mechanical, ax=ax[i, j], saturation=1)
             if j == 0:
                 ax[i, j].add_patch(Rectangle((-1.5, -5), 0.5, 11, 
@@ -224,6 +273,8 @@ for i in range(2):
         ax[i, j].set_ylim(-5, 6)
         ax[i, j].set_ylabel('')
         ax[i, j].set_xlabel('')
+        ax[i, j].set_xticks(np.arange(len(authors)))
+        ax[i, j].set_xticklabels(authors, rotation=23, ha='right')
 
 plt.tight_layout()
 plt.savefig('Figures/BOXPLOT_AUTHOR.jpg', dpi=300)
