@@ -585,7 +585,7 @@ def PCAplot(dataframe, tex, groupby, label):
                 ax[i, j].set_ylim(-5, 6)
                 if i == 0:
                     ax[i, j].set_xlabel('PC1', size=20)
-                    ax[i, j].set_ylabel('PC2', size=20)
+                    # ax[i, j].set_ylabel('PC2', size=20)
                     ax[i, j].text(-4.5, 4.5, 'A3', size=40)
                     ax[i, j].add_patch(Rectangle((-5, 6+0.5), 11, 1,
                                                  clip_on=False, fill=True,
