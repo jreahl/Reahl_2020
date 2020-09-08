@@ -1,0 +1,10 @@
+_Kv		20.0
+_Mag		256
+_Tilt		0.0
+_Detector	ADC1
+_Averaging	16
+_DataRange	0-4095
+_Label		SE1
+_Matrix		512x400
+_MicronsPerPixX	2.243
+_MicronsPerPixY	2.243

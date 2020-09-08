@@ -1,0 +1,12 @@
+_Kv		20.0
+_Mag		256
+_Tilt		0.0
+_TkOff		34.0
+_DwellTime	200
+_AmpTime	3.2
+_DataType	ROIs
+_DataRange	0-8
+_Label		AlK
+_Matrix		512x400
+_MicronsPerPixX	2.243
+_MicronsPerPixY	2.243
