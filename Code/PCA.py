@@ -7,8 +7,8 @@ from sklearn.decomposition import PCA
 from sklearn import preprocessing
 import random
 import matplotlib.pyplot as plt
-from matplotlib.patches import Patch, Ellipse
-from matplotlib.patches import Rectangle
+from matplotlib.patches import Patch, Ellipse, Rectangle
+import matplotlib.transforms as transforms
 from matplotlib.lines import Line2D
 from matplotlib.text import Text
 from matplotlib.legend_handler import HandlerBase
@@ -217,34 +217,58 @@ def score_sorter(pca, tex, n):
     return PCsorted
 
 
-def get_cov_ellipse(cov, center, nstd, **kwargs):
+
+def confidence_ellipse(x, y, ax, n_std=3.0, facecolor='none', **kwargs):
     """
-    Derived from "BMI data with confidence ellipses" example in: Hill, C.,
-    2016, Chapter 7: Matplotlib, in Hill, C., ed., Learning Scientific
-    Programming in Python: Cambridge University Press.
-    ---------------------------------------------------------------------------
-    Draw an ellipse representing the confidence interval (in number of standard
-    deviations (nstd))
-    ---------------------------------------------------------------------------
-    cov = covariance matrix of x and y values in plot
-    center = averaged x and y values in plot; for centering the ellipse
-    nstd = the number of standard deviations (95% confidence interval = 1.96)
-    **kwargs = keyword arguments that would be used in the Ellipse function
+    Create a plot of the covariance confidence ellipse of *x* and *y*.
+    https://matplotlib.org/devdocs/gallery/statistics/confidence_ellipse.html
+    Parameters
+    ----------
+    x, y : array-like, shape (n, )
+        Input data.
+
+    ax : matplotlib.axes.Axes
+        The axes object to draw the ellipse into.
+
+    n_std : float
+        The number of standard deviations to determine the ellipse's radiuses.
+
+    **kwargs
+        Forwarded to `~matplotlib.patches.Ellipse`
+
+    Returns
+    -------
+    matplotlib.patches.Ellipse
     """
-    # Find and sort eigenvalues and eigenvectors into descending order
-    eigvals, eigvecs = np.linalg.eigh(cov)
-    order = eigvals.argsort()[::-1]
-    eigvals, eigvecs = eigvals[order], eigvecs[:, order]
+    if x.size != y.size:
+        raise ValueError("x and y must be the same size")
 
-    # The anti-clockwise angle to rotate our ellipse by
-    vx, vy = eigvecs[:, 0][0], eigvecs[:, 0][1]
-    theta = np.arctan2(vy, vx)
+    cov = np.cov(x, y)
+    pearson = cov[0, 1]/np.sqrt(cov[0, 0] * cov[1, 1])
+    # Using a special case to obtain the eigenvalues of this
+    # two-dimensionl dataset.
+    ell_radius_x = np.sqrt(1 + pearson)
+    ell_radius_y = np.sqrt(1 - pearson)
+    ellipse = Ellipse((0, 0), width=ell_radius_x * 2, height=ell_radius_y * 2,
+                      facecolor=facecolor, **kwargs)
 
-    # Width and height of ellipse to draw
-    width, height = 2 * nstd * np.sqrt(eigvals)
-    return Ellipse(xy=center, width=width, height=height,
-                   angle=np.degrees(theta), lw=2, **kwargs)
+    # Calculating the stdandard deviation of x from
+    # the squareroot of the variance and multiplying
+    # with the given number of standard deviations.
+    scale_x = np.sqrt(cov[0, 0]) * n_std
+    mean_x = np.mean(x)
 
+    # calculating the stdandard deviation of y ...
+    scale_y = np.sqrt(cov[1, 1]) * n_std
+    mean_y = np.mean(y)
+
+    transf = transforms.Affine2D() \
+        .rotate_deg(45) \
+        .scale(scale_x, scale_y) \
+        .translate(mean_x, mean_y)
+
+    ellipse.set_transform(transf + ax.transData)
+    return ax.add_patch(ellipse)
 
 def PCAplot_randomtrainingdata(dataframe, tex):
     sample = dataframe[dataframe['transport'] == 'Bravika Mbr']
@@ -421,13 +445,9 @@ def PCAplot(dataframe, tex, groupby, label):
                         colors = ['#1A85FF', '#D41159']
                     for c in colors:
                         data = pca_df_ref[pca_df_ref['color'] == c]
-                        PC1mean = data['PC1'].mean()
-                        PC2mean = data['PC2'].mean()
-                        cov = np.cov(data['PC1'], data['PC2'])
-                        e = get_cov_ellipse(cov, (PC1mean, PC2mean), 1.96,
-                                            facecolor='none', edgecolor=c,
-                                            alpha=1)
-                        ax[i, j].add_artist(e)
+                        confidence_ellipse(data['PC1'], data['PC2'],
+                                           ax[i, j], n_std=2, facecolor='none',
+                                           edgecolor=c, alpha=1, lw=2)
                     # for k in range(len(sample.data)):
                     #     if color == 'transport':
                     #         fk = sample.transportcolor[k]
@@ -470,13 +490,9 @@ def PCAplot(dataframe, tex, groupby, label):
                         colors = ['#1A85FF', '#D41159']
                     for c in colors:
                         data = pca_df_ref[pca_df_ref['color'] == c]
-                        PC1mean = data['PC1'].mean()
-                        PC3mean = data['PC3'].mean()
-                        cov = np.cov(data['PC1'], data['PC3'])
-                        e = get_cov_ellipse(cov, (PC1mean, PC3mean), 1.96,
-                                            facecolor='none', edgecolor=c,
-                                            alpha=1)
-                        ax[i, j].add_artist(e)
+                        confidence_ellipse(data['PC1'], data['PC3'],
+                                           ax[i, j], n_std=2, facecolor='none',
+                                           edgecolor=c, alpha=1, lw=2)
                     # for k in range(len(sample.data)):
                     #     if color == 'transport':
                     #         fk = sample.transportcolor[k]
@@ -519,13 +535,9 @@ def PCAplot(dataframe, tex, groupby, label):
                         colors = ['#1A85FF', '#D41159']
                     for c in colors:
                         data = pca_df_ref[pca_df_ref['color'] == c]
-                        PC2mean = data['PC2'].mean()
-                        PC3mean = data['PC3'].mean()
-                        cov = np.cov(data['PC2'], data['PC3'])
-                        e = get_cov_ellipse(cov, (PC2mean, PC3mean), 1.96,
-                                            facecolor='none', edgecolor=c,
-                                            alpha=1)
-                        ax[i, j].add_artist(e)
+                        confidence_ellipse(data['PC2'], data['PC3'],
+                                           ax[i, j], n_std=2, facecolor='none',
+                                           edgecolor=c, alpha=1, lw=2)
                     # for k in range(len(sample.data)):
                     #     if color == 'transport':
                     #         fk = sample.transportcolor[k]
@@ -613,13 +625,9 @@ def PCAplot(dataframe, tex, groupby, label):
                         colors = ['#1A85FF', '#D41159']
                     for c in colors:
                         data = pca_df_ref[pca_df_ref['color'] == c]
-                        PC1mean = data['PC1'].mean()
-                        PC2mean = data['PC2'].mean()
-                        cov = np.cov(data['PC1'], data['PC2'])
-                        e = get_cov_ellipse(cov, (PC1mean, PC2mean), 1.96,
-                                            facecolor='none', edgecolor=c,
-                                            alpha=1)
-                        ax[i, j].add_artist(e)
+                        confidence_ellipse(data['PC1'], data['PC2'],
+                                           ax[i, j], n_std=2, facecolor='none',
+                                           edgecolor=c, alpha=1, lw=2)
                     for k in range(len(sample.data)):
                         if groupby == 'transport':
                             fk = sample.transportcolor[k]
@@ -654,13 +662,9 @@ def PCAplot(dataframe, tex, groupby, label):
                         colors = ['#1A85FF', '#D41159']
                     for c in colors:
                         data = pca_df_ref[pca_df_ref['color'] == c]
-                        PC1mean = data['PC1'].mean()
-                        PC3mean = data['PC3'].mean()
-                        cov = np.cov(data['PC1'], data['PC3'])
-                        e = get_cov_ellipse(cov, (PC1mean, PC3mean), 1.96,
-                                            facecolor='none', edgecolor=c,
-                                            alpha=1)
-                        ax[i, j].add_artist(e)
+                        confidence_ellipse(data['PC1'], data['PC3'],
+                                           ax[i, j], n_std=2, facecolor='none',
+                                           edgecolor=c, alpha=1, lw=2)
                     for k in range(len(sample.data)):
                         if groupby == 'transport':
                             fk = sample.transportcolor[k]
@@ -695,13 +699,9 @@ def PCAplot(dataframe, tex, groupby, label):
                         colors = ['#1A85FF', '#D41159']
                     for c in colors:
                         data = pca_df_ref[pca_df_ref['color'] == c]
-                        PC2mean = data['PC2'].mean()
-                        PC3mean = data['PC3'].mean()
-                        cov = np.cov(data['PC2'], data['PC3'])
-                        e = get_cov_ellipse(cov, (PC2mean, PC3mean), 1.96,
-                                            facecolor='none', edgecolor=c,
-                                            alpha=1)
-                        ax[i, j].add_artist(e)
+                        confidence_ellipse(data['PC2'], data['PC3'],
+                                           ax[i, j], n_std=2, facecolor='none',
+                                           edgecolor=c, alpha=1, lw=2)
                     for k in range(len(sample.data)):
                         if groupby == 'transport':
                             fk = sample.transportcolor[k]
