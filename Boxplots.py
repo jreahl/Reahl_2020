@@ -16,7 +16,7 @@ from scipy import stats
 import numpy as np
 
 sns.set(style='white')
-master2 = pd.read_csv('ALLDATA.csv')
+master2 = pd.read_csv('Data_CSV/ALLDATA.csv')
 tex_allauthors = ['as', 'cf', 'cg', 'er', 'ls', 'pf', 'saf', 'slf', 'vc',
                   'low', 'med', 'high']
 tex_mechanical = ['as', 'cf', 'cg', 'er', 'ls', 'saf', 'slf', 'vc', 'low',
@@ -116,7 +116,7 @@ for i in range(int(len(statistics)/3)):
                                                         'Mechanical',
                                                         'transport',
                                                         transport[j], 'PC3')
-statistics.to_excel('STATISTICS.xlsx')
+statistics.to_excel('Data_XLSX/STATISTICS.xlsx')
 
 # Calculate Statistics for Authors
 statistics = pd.DataFrame(columns=['type', 'group', 'PC', 'q25', 'q50',
@@ -156,7 +156,7 @@ for i in range(int(len(statistics)/6)):
                                                         'Mechanical',
                                                         'author',
                                                         authors[j], 'PC3')
-statistics.to_excel('STATISTICS-AUTHOR.xlsx')
+statistics.to_excel('Data_XLSX/STATISTICS-AUTHOR.xlsx')
 
 transport = ['Bravika', 'Aeolian', 'Fluvial', 'Glacial']
 ancient_aa.transport = ancient_aa.transport.astype('category')

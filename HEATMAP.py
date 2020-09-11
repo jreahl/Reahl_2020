@@ -2,10 +2,13 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Mar  3 11:38:44 2020
+Author: Jocelyn N. Reahl
+Title: HEATMAP
+Description: Script to generate heatmap figures for modern and ancient samples
+used in this dataset.
 
-@author: Jocelyn N. Reahl
 """
-
+# Import packages
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -16,18 +19,19 @@ import seaborn as sns
 
 def heatmap(sampleage):
     '''
-    A function to create heatmaps for the Modern and Ancient data.
+    A function to create heatmaps for the modern and ancient data.
     ----------
     sampleage : str
         A string to identify the set of data to plot.
         'MODERN' = plot the modern dataset
         'ANCIENT' = plot the ancient dataset
-        Ideally input these as all caps strings, but there's an if statement
-        to convert lowercase inputs to uppercase.
+        Data are pulled from Data_CSV directory.
+        Ideally input these as all caps strings, but function will
+        automatically capitalize these inputs for you.
 
     Returns
     -------
-    None.
+    ax: matplotlib axes object
 
     '''
     sns.set() # Initialize Seaborn
@@ -39,7 +43,7 @@ def heatmap(sampleage):
         pass
     
     # Import original data + get it ready for plotting in a heatmap:
-    original = pd.read_csv('HEATMAP-' + sampleage + '.csv') # Original dataset
+    original = pd.read_csv('Data_CSV/HEATMAP-' + sampleage + '.csv') # Original dataset
     original = original.set_index('sample') # Reindex "original" using sample names
     if sampleage == 'MODERN':
         transmodes = ['Aeolian', 'Fluvial', 'Glacial'] # Transport mode groups
@@ -47,6 +51,8 @@ def heatmap(sampleage):
     elif sampleage == 'ANCIENT':
         transmodes = ['Unknown', 'Aeolian', 'Fluvial', 'Glacial'] # Trans. modes
         transcolors = ['#000000', '#D55E00', '#0072B2', '#F0E442'] # Colors
+    
+    # Define microtextures:
     microtextures = ['af', 'as', 'bb', 'cf', 'ff', 'ls', 'saf', 'slf', # Polygenetic
                      'er', 'vc',  # Percussion
                      'crg', 'cg', 'dt', 'sg', 'up', # High-stress
@@ -159,6 +165,6 @@ def heatmap(sampleage):
     plt.savefig('Figures/HEATMAP-' + sampleage + '.jpg', dpi=300) # Save!
     plt.show() # Show plot in console
 
-
+# Run heatmap function to generate plots
 heatmap('MODERN')
 heatmap('ANCIENT')
