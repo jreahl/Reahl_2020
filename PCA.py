@@ -1,31 +1,51 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Author: Jocelyn N. Reahl
+Title: PCA
+Description: Script to generate PCA plots for all-textures and mechanical
+ordinations, as well as blank legend templates to further edit in a vector
+graphics program like Illustrator or Inkscape.
 
+"""
+# Import packages:
 import pandas as pd
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn import preprocessing
-import random
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch, Ellipse, Rectangle
 import matplotlib.transforms as transforms
 from matplotlib.lines import Line2D
-from matplotlib.text import Text
-from matplotlib.legend_handler import HandlerBase
-from matplotlib.legend import Legend
 
-master2 = pd.read_csv('Data_CSV/ALLDATA.csv')
-tex_allpossible = ['af', 'as', 'bb', 'cf', 'ff', 'ls', 'saf', 'slf', 'up',  # Polygenetic
-                   'er', 'vc',  # Percussion
-                   'crg', 'cg', 'dt', 'sg',  # High-stress
-                   'de', 'pf',  # Chemicals
-                   'low', 'med', 'high']  # General (applies to all grains)
+# Import ALLDATA.csv
+alldata = pd.read_csv('Data_CSV/ALLDATA.csv')
+
+# Define microtexture sets to use for PCA:
+
+# tex_allpossible = ['af', 'as', 'bb', 'cf', 'ff', 'ls', 'saf', 'slf', 'up',  # Polygenetic
+#                    'er', 'vc',  # Percussion
+#                    'crg', 'cg', 'dt', 'sg',  # High-stress
+#                    'de', 'pf',  # Chemicals
+#                    'low', 'med', 'high']  # Relief
 tex_allauthors = ['as', 'cf', 'cg', 'er', 'ls', 'pf', 'saf', 'slf', 'vc',
                   'low', 'med', 'high']
 tex_mechanical = ['as', 'cf', 'cg', 'er', 'ls', 'saf', 'slf', 'vc', 'low',
                   'med', 'high']
 
-
+# Set up the custom legend for this PCA plot
+# - Blank spaces for microtextures need to be replaced with abbreviations for
+#   each microtexture in a vector graphics program like Illustrator or
+#   Inkscape; had trouble getting it to do it in the actual script so this is
+#   the hack for now.
+# - If using groupby='transport' in the PCAplot function, comment out the 'Ice
+#   Nearby/Absent' + blank space and uncomment out the transport modes
+#   ('Aeolian', 'Fluvial', 'Glacial', + blank space).
+# - If using groupby='climate' in the PCAplot function, uncomment the 'Ice
+#   Nearby/Absent' + blank space and comment out the transport modes
+#   ('Aeolian', 'Fluvial', 'Glacial', + blank space).
+# - If doing an all-textures ordination, uncomment the precipitated features
+#   line and blank space; if doing mechanical leave it commented.
 legend_elements = [
                    Patch(facecolor='#ffffff', label=''),
                    Patch(facecolor='#D55E00', label='Aeolian'),
@@ -87,16 +107,27 @@ legend_elements = [
                          label='V-Shaped Percussion Cracks'),
                    Patch(facecolor='#ffffff', label=''),
                    Patch(facecolor='#ffffff', label='Curved Grooves'),
-                    # Patch(facecolor='#ffffff', label=''),
-                    # Patch(facecolor='#ffffff', label='Precipitated Features'),
+                 # Patch(facecolor='#ffffff', label=''),
+                 # Patch(facecolor='#ffffff', label='Precipitated Features'),
                    Patch(facecolor='#ffffff', label=''),
                    Patch(facecolor='#ffffff', label='Low Relief'),
                    Patch(facecolor='#ffffff', label='Medium Relief'),
                    Patch(facecolor='#ffffff', label='High Relief')]
 legend = plt.legend(handles=legend_elements, frameon=True)
-plt.axis('off')
+plt.axis('off') # keep the matplotlib axis out of the legend
 
-def export_legend(legend, filename='PCA-LEGEND.jpg', expand=[-5, -5, 5, 5], dpi=300):
+def export_legend(legend, filename='PCA-LEGEND.jpg', expand=[-5, -5, 5, 5],
+                  dpi=300):
+    '''
+    Export legend as an image.
+    ----------
+    legend = legend object created using plt.legend()
+    filename = str; chosen name of the document file + extension; file is
+               directed to the Figures folder.
+    expand = list; parameters to help create bbox to save fig.
+    dpi = int; the dots per inch (dpi) of the new file; 300 is on the higher
+          end and 72 is on the lower end, for reference.
+    '''
     fig = legend.figure
     fig.canvas.draw()
     bbox = legend.get_window_extent()
@@ -106,6 +137,9 @@ def export_legend(legend, filename='PCA-LEGEND.jpg', expand=[-5, -5, 5, 5], dpi=
 
 
 class RepackagedData:
+    '''
+    Class to reformat input data for the PCA plotting functions.
+    '''
     def __init__(self, data, tex):
         self.data = data.loc[:, tex]
         self.transportcolor = list(map(lambda s: s.replace('\ufeff', ''),
@@ -115,50 +149,12 @@ class RepackagedData:
         self.marker = data.marker
 
 
-def generate_trainingdata(dataframe, tex):
-    transport = ['Aeolian', 'Fluvial', 'Glacial']
-    sansBravika = dataframe[(dataframe['transport'] != 'Bravika') &
-                            (dataframe['relage'] == 'Active')]
-    initialdata = pd.DataFrame(columns=sansBravika.columns)
-    sel_id = []
-    if len(dataframe) % 2 == 0:
-        maxsize = int(len(sansBravika)/2)
-    elif len(dataframe) % 2 == 1:
-        maxsize = int((len(sansBravika)+1)/2)
-    for i in range(len(transport)):
-        transport_data = sansBravika[sansBravika['transport'] == transport[i]]
-        rand_id = random.choice(transport_data.index.values)
-        r = transport_data.loc[rand_id, :]
-        initialdata = initialdata.append(r)
-        sel_id.append(rand_id)
-    while len(initialdata) < maxsize:
-        rand_id = random.choice(sansBravika.index.values)
-        if rand_id not in sel_id:
-            r = sansBravika.loc[rand_id, :]
-            initialdata = initialdata.append(r)
-            sel_id.append(rand_id)
-        else:
-            pass
-    remainingdata = pd.DataFrame(columns=sansBravika.columns)
-    remainder = len(sansBravika) - maxsize
-    while len(remainingdata) < remainder:
-        rand_id = random.choice(sansBravika.index.values)
-        if rand_id not in sel_id:
-            r = sansBravika.loc[rand_id, :]
-            remainingdata = remainingdata.append(r)
-            sel_id.append(rand_id)
-        else:
-            pass
-
-    initialdata = RepackagedData(initialdata, tex)
-    remainingdata = RepackagedData(remainingdata, tex)
-    return initialdata, remainingdata
-
 
 def textplot(ax, tex, x, y, PCx, PCy, label):
     """
-    Function to plot text on PCA/NMDS plots in a pretty way.
-    ---------------------------------------------------------------------------
+    Plot text on PCA plots so that microtexture abbreviations do not overlap
+    with arrows.
+    ----------
     ax = axis object (e.g. ax1, ax2, etc.)
     tex = microtextures used to make PCA ordination
     x = float; x coordinate of vector
@@ -211,6 +207,17 @@ def textplot(ax, tex, x, y, PCx, PCy, label):
 
 
 def score_sorter(pca, tex, n):
+    '''
+    Sort PCA loadings by loading score.
+    ----------
+    pca = pca model object
+    tex = list of microtexture abbreviations; same as used for PCA ordination
+    n = PC axis; ex. 1 = PC1, 2 = PC2, etc.
+    
+    Returns
+    ----------
+    PCsorted = pandas Series with sorted loadings
+    '''
     PCloadings = pd.Series(pca.components_[n-1], index=tex)
     PCsorted = PCloadings.sort_values(ascending=False)
     # PCsorted = PCsorted.index.values
@@ -237,7 +244,7 @@ def confidence_ellipse(x, y, ax, n_std=3.0, facecolor='none', **kwargs):
         Forwarded to `~matplotlib.patches.Ellipse`
 
     Returns
-    -------
+    ---------
     matplotlib.patches.Ellipse
     """
     if x.size != y.size:
@@ -270,73 +277,18 @@ def confidence_ellipse(x, y, ax, n_std=3.0, facecolor='none', **kwargs):
     ellipse.set_transform(transf + ax.transData)
     return ax.add_patch(ellipse)
 
-def PCAplot_randomtrainingdata(dataframe, tex):
-    sample = dataframe[dataframe['transport'] == 'Bravika Mbr']
-    sample = RepackagedData(sample, tex)
-    initialdata, remainingdata = generate_trainingdata(dataframe, tex)
-    scaled_data = preprocessing.scale(initialdata.data)
-    pca = PCA()
-    pca_initialdata = pca.fit_transform(scaled_data)
-    per_var = np.round(np.round(pca.explained_variance_ratio_*100, decimals=1))
-    components = ['PC' + str(x) for x in range(1, len(per_var)+1)]
-    pca_df = pd.DataFrame(pca_initialdata, columns=components)
-    loading_scores = pd.DataFrame(list(zip(tex, pca.components_[0],
-                                           pca.components_[1])), index=None,
-                                  columns=['microtextures', 'PC1', 'PC2'])
-    fig, ax = plt.subplots(figsize=(13, 10))
-    ax.set_title('Trained Dataset Using Randomly Selected Training Data')
-    ax.set_xlim(-6, 6)
-    ax.set_ylim(-6, 6)
-    ax.set_xlabel('PC1', size=20)
-    ax.set_ylabel('PC2', size=20)
-    ax.tick_params(axis='both', which='major', labelsize=14)
-    for i in range(len(initialdata.data)):
-        fi = initialdata.transportcolor[i]
-        mi = initialdata.marker.iloc[i]
-        xi = pca_df.PC1[i]
-        yi = pca_df.PC2[i]
-        ax.scatter(xi, yi, marker=mi, facecolors=fi, edgecolors='#000000',
-                   s=200, alpha=1)
-    for labels, PC1, PC2 in loading_scores.values[:, 0:3]:
-        ax.arrow(0, 0, PC1*10, PC2*10, color='#989898',
-                 length_includes_head=True, head_width=0.3, overhang=0.5)
-        textplot(ax, PC1*10, PC2*10, labels)
-    scaled_data_remain = preprocessing.scale(remainingdata.data)
-    pca_remainingdata = pca.transform(scaled_data_remain)
-    per_var_remain = np.round(np.round(pca.explained_variance_ratio_*100,
-                                       decimals=1))
-    components_remain = ['PC' + str(x) for x in range(1,
-                                                      len(per_var_remain)+1)]
-    pca_df_remain = pd.DataFrame(pca_remainingdata, columns=components_remain)
-    for i in range(len(remainingdata.data)):
-        fi = remainingdata.transportcolor[i]
-        mi = remainingdata.marker.iloc[i]
-        xi = pca_df_remain.PC1[i]
-        yi = pca_df_remain.PC2[i]
-        ax.scatter(xi, yi, marker=mi, facecolors=fi, edgecolors='#000000',
-                   s=200, alpha=1)
-    scaled_data_sam = preprocessing.scale(sample.data)
-    pca_sample = pca.transform(scaled_data_sam)
-    per_var_sam = np.round(np.round(pca.explained_variance_ratio_*100,
-                                    decimals=1))
-    components_sam = ['PC' + str(x) for x in range(1, len(per_var_sam)+1)]
-    pca_df_sam = pd.DataFrame(pca_sample, columns=components_sam)
-    for i in range(len(sample.data)):
-        fi = sample.transportcolor[i]
-        mi = sample.marker.iloc[i]
-        xi = pca_df_sam.PC1[i]
-        yi = pca_df_sam.PC2[i]
-        ax.scatter(xi, yi, marker=mi, facecolors=fi, edgecolors='#000000',
-                   s=200, alpha=1)
-    ax.legend(handles=legend_elements, loc='upper left',
-              bbox_to_anchor=(1, 1), ncol=1, prop={'size': 12})
-    plt.tight_layout()
-    plt.savefig('PCA_TrainedDataset.jpg', dpi=300)
-    plt.show()
 
 
-
-def PCAplot(dataframe, tex, groupby, label):
+def PCAplot(dataframe, tex, label, groupby='transport'):
+    '''
+    Perform PCA and plot biplots of PCA data and loadings.
+    ----------
+    dataframe = pandas Dataframe; use data from ALLDATA.csv
+    tex = list of microtexture abbreviations to use for PCA ordination
+    label = str; file name with no extension; directs to Figures folder
+    groupby = str; 'transport' = samples are grouped by transport mode,
+              'climate' = samples are grouped by ice presence/absence.
+    '''
     # Define "reference" and "sample" datasets and repackage into
     # RepackagedData class.
     reference = dataframe[(dataframe['relage'] == 'Active')]
@@ -363,6 +315,7 @@ def PCAplot(dataframe, tex, groupby, label):
                                       index=None,
                                       columns=['microtextures', 'PC1', 'PC2',
                                                'PC3'])
+    # Print out Variance for PC1-PC3 in the console:
     print('Principal Component Variance:')
     print(per_var_ref)
     print('Sum of PC1 = ' + str(per_var_ref[0]))
@@ -448,17 +401,6 @@ def PCAplot(dataframe, tex, groupby, label):
                         confidence_ellipse(data['PC1'], data['PC2'],
                                            ax[i, j], n_std=2, facecolor='none',
                                            edgecolor=c, alpha=1, lw=2)
-                    # for k in range(len(sample.data)):
-                    #     if color == 'transport':
-                    #         fk = sample.transportcolor[k]
-                    #     elif color == 'climate':
-                    #         fk = sample.climatecolor[k]
-                    #     mk = sample.marker.iloc[k]
-                    #     xk = pca_df_sam.PC1[k]
-                    #     yk = pca_df_sam.PC2[k]
-                    #     ax[i, j].scatter(xk, yk, marker=mk, facecolors=fk,
-                    #                      edgecolors='k', s=200, alpha=1,
-                    #                      linewidths=1)
                 elif i == 1:
                     ax[i, j].set_xlabel('PC1', size=20)
                     ax[i, j].set_ylabel('PC3', size=20)
@@ -493,17 +435,6 @@ def PCAplot(dataframe, tex, groupby, label):
                         confidence_ellipse(data['PC1'], data['PC3'],
                                            ax[i, j], n_std=2, facecolor='none',
                                            edgecolor=c, alpha=1, lw=2)
-                    # for k in range(len(sample.data)):
-                    #     if color == 'transport':
-                    #         fk = sample.transportcolor[k]
-                    #     elif color == 'climate':
-                    #         fk = sample.climatecolor[k]
-                    #     mk = sample.marker.iloc[k]
-                    #     xk = pca_df_sam.PC1[k]
-                    #     yk = pca_df_sam.PC3[k]
-                    #     ax[i, j].scatter(xk, yk, marker=mk, facecolors=fk,
-                    #                       edgecolors='k', s=200, alpha=1,
-                    #                       linewidths=1)
                 elif i == 2:
                     ax[i, j].set_xlabel('PC2', size=20)
                     ax[i, j].set_ylabel('PC3', size=20)
@@ -538,17 +469,6 @@ def PCAplot(dataframe, tex, groupby, label):
                         confidence_ellipse(data['PC2'], data['PC3'],
                                            ax[i, j], n_std=2, facecolor='none',
                                            edgecolor=c, alpha=1, lw=2)
-                    # for k in range(len(sample.data)):
-                    #     if color == 'transport':
-                    #         fk = sample.transportcolor[k]
-                    #     elif color == 'climate':
-                    #         fk = sample.climatecolor[k]
-                    #     mk = sample.marker.iloc[k]
-                    #     xk = pca_df_sam.PC2[k]
-                    #     yk = pca_df_sam.PC3[k]
-                    #     ax[i, j].scatter(xk, yk, marker=mk, facecolors=fk,
-                    #                      edgecolors='k', s=200, alpha=1,
-                    #                      linewidths=1)
             elif j == 1:
                 ax[i, j].set_xlim(-0.6, 0.6)
                 ax[i, j].set_ylim(-0.7, 0.7)
@@ -713,6 +633,5 @@ def PCAplot(dataframe, tex, groupby, label):
                         ax[i, j].scatter(xk, yk, marker=mk, facecolors=fk,
                                          edgecolors='k', s=200, alpha=1,
                                          linewidths=1) 
-    # plt.tight_layout()
     plt.savefig('Figures/PCA-' + label.upper() + '.jpg', dpi=300)
     plt.show()
