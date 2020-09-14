@@ -57,6 +57,8 @@ legend_elements = [
                    #       label='Ice Nearby'),
                    # Patch(facecolor='#D41159',
                    #       label='Ice Absent'),
+                   # Patch(facecolor='#000000',
+                   #       label='Ancient'),
                    Patch(facecolor='#ffffff', label=''),
                    Patch(facecolor='#ffffff', label=''),
                    Line2D([0], [0], marker='o', color='w',
