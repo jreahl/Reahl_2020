@@ -3,9 +3,13 @@
 """
 Created on Wed Sep  2 15:34:15 2020
 
-@author: jocelynreahl
+Author: Jocelyn N Reahl
+Title: BOXPLOTS
+Description: Script to generate boxplots for all-textures and mechanical PCA
+ordinations.
 """
 
+# Import packages
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
@@ -15,17 +19,33 @@ from sklearn.decomposition import PCA
 from scipy import stats
 import numpy as np
 
-sns.set(style='white')
+sns.set(style='white') # Set style for Seaborn plot
+
+# Import data and split it up into modern and ancient datasets
 master2 = pd.read_csv('Data_CSV/ALLDATA.csv')
+modern = master2[master2['relage'] == 'Active']
+ancient = master2[master2['relage'] == 'Ancient']
+
+# Define textures used in PCA ordination 
 tex_allauthors = ['as', 'cf', 'cg', 'er', 'ls', 'pf', 'saf', 'slf', 'vc',
                   'low', 'med', 'high']
 tex_mechanical = ['as', 'cf', 'cg', 'er', 'ls', 'saf', 'slf', 'vc', 'low',
                   'med', 'high']
-modern = master2[master2['relage'] == 'Active']
-ancient = master2[master2['relage'] == 'Ancient']
 
 
 def run_PCA_fit_transform(dataset, tex):
+    '''
+    Run PCA fit-transform on dataset (fits the PCA model to the dataset and
+    apply dimensionality reduction to dataset).
+    ----------
+    dataset = pandas dataframe
+    tex = list of microtexture abbreviations to use for PCA ordination
+    
+    Returns
+    ----------
+    pca_df = pandas dataframe with coordinates for each sample on each PC axis
+    pca = pca model object
+    '''
     data = dataset.loc[:, tex]
     scaled_data = preprocessing.scale(data)
     pca = PCA()
@@ -39,6 +59,18 @@ def run_PCA_fit_transform(dataset, tex):
 
 
 def run_PCA_transform(dataset, tex, pca):
+    '''
+    Run PCA transform on dataset (applies existing dimensionality reduction
+    from initial pca.fit_transform() to new dataset).
+    ----------
+    dataset = pandas dataframe
+    tex = list of microtexture abbreviations to use for PCA ordination
+    pca = pca model object from run_PCA_fit_transform()
+    
+    Returns
+    ----------
+    pca_df = pandas dataframe with coordinates for each sample on each PC axis
+    '''
     if 'pf' in set(tex):
         dataset = dataset[dataset['author'] != 'Sweet_2010']
         data = dataset.loc[:, tex]
@@ -59,6 +91,16 @@ def run_PCA_transform(dataset, tex, pca):
 
 
 def calc_boxplot(dataset, ordination, groupcolumn, groupstr, PC):
+    '''
+    Calculate boxplot statistics for dataset.
+    ----------
+    dataset = pandas dataframe
+    ordination = str; name of the ordination, e.g. "All Textures" or
+                 "Mechanical"
+    groupcolumn = str; column to group dataset by
+    groupstr = str; value in column to group dataset by
+    PC = str; principal component to sort by (e.g. 'PC1', 'PC2', etc.)
+    '''
     d = dataset[dataset[groupcolumn] == groupstr].loc[:, PC]
     q25, q50, q75 = np.percentile(d, [25, 50, 75])
     whiskerlim = 1.5 * stats.iqr(d)
@@ -72,15 +114,25 @@ def calc_boxplot(dataset, ordination, groupcolumn, groupstr, PC):
 transport = ['Aeolian', 'Fluvial', 'Glacial']
 authors = ['this study', 'Smith_2018', 'Kalinska-Nartisa_2017', 'Sweet_2016',
            'Stevic_2015', 'Mahaney_1996']
+
+# Run pca.fit_transform() on modern data for all-textures and mechanical
+# ordinations
 modern_aa, pca_aa = run_PCA_fit_transform(modern, tex_allauthors)
 modern_me, pca_me = run_PCA_fit_transform(modern, tex_mechanical)
+
+# Run pca.transform() on ancient data using pca object from pca.fit_transform()
 ancient_aa = run_PCA_transform(ancient, tex_allauthors, pca_aa)
 ancient_me = run_PCA_transform(ancient, tex_mechanical, pca_me)
+
+# Group data into modern and ancient groups
 data_modern = [modern_aa, modern_me]
 data_ancient = [ancient_aa, ancient_me]
+
+# Define empty "statistics" object to fill
 statistics = pd.DataFrame(columns=['type', 'group', 'PC', 'q25', 'q50',
                                    'q75', 'h1', 'h2'],
                           index=np.arange(0, 18))
+
 # Calculate Statistics for Aeolian, Fluvial, and Glacial Samples
 for i in range(int(len(statistics)/3)):
     for j in range(3):
@@ -116,6 +168,7 @@ for i in range(int(len(statistics)/3)):
                                                         'Mechanical',
                                                         'transport',
                                                         transport[j], 'PC3')
+# Convert statistics object to excel sheet
 statistics.to_excel('Data_XLSX/STATISTICS.xlsx')
 
 # Calculate Statistics for Authors
@@ -156,16 +209,20 @@ for i in range(int(len(statistics)/6)):
                                                         'Mechanical',
                                                         'author',
                                                         authors[j], 'PC3')
+# Convert statistics object to excel sheet
 statistics.to_excel('Data_XLSX/STATISTICS-AUTHOR.xlsx')
 
+# Sort ancient data by transport list below (e.g. Bravika first,
+# aeolian second, etc.)
 transport = ['Bravika', 'Aeolian', 'Fluvial', 'Glacial']
 ancient_aa.transport = ancient_aa.transport.astype('category')
 ancient_aa.transport.cat.set_categories(transport, inplace=True)
 ancient_me.transport = ancient_me.transport.astype('category')
 ancient_me.transport.cat.set_categories(transport, inplace=True)
-
 ancient_aa = ancient_aa.sort_values(['transport'])
 ancient_me = ancient_me.sort_values(['transport'])
+
+# Plot Transport Boxplot (BOXPLOT-TRANSPORT)
 fig, ax = plt.subplots(2, 3, figsize=(15, 10))
 for i in range(2):
     for j in range(3):
@@ -173,12 +230,6 @@ for i in range(2):
                              labeltop=False, right=True, labelright=False,
                              left=True, bottom=True, labelsize=14)
         if i == 0:
-            # sns.stripplot(x='transport', y='PC' + str(j+1),
-            #               order=['Bravika', 'Aeolian', 'Fluvial',
-            #                       'Glacial'],
-            #               palette=['#000000', '#D55E00', '#0072B2',
-            #                         '#F0E442'], data=ancient_aa,
-            #               ax=ax[i, j])
             sns.boxplot(x='transport', y='PC' + str(j+1), order=transport,
                         palette=['#000000', '#D55E00', '#0072B2', '#F0E442'],
                         data=modern_aa, ax=ax[i, j], saturation=1,
@@ -190,14 +241,6 @@ for i in range(2):
                                  edgecolors='k',
                                  s=200,
                                  marker=ancient_aa['marker'].iloc[k])
-            #     sns.stripplot(x='transport',
-            #                   y='PC' + str(j+1),
-            #                   order=['Bravika', 'Aeolian', 'Fluvial',
-            #                           'Glacial'],
-            #                   palette=['#000000', '#D55E00', '#0072B2',
-            #                             '#F0E442'], data=ancient_aa,
-            #                   ax=ax[i, j],
-            #                   marker=ancient_aa['marker'].iloc[k])
             ax[i, j].set_xticks(np.arange(0, 4))
             ax[i, j].set_xticklabels(['Bråvika', 'Aeolian', 'Fluvial', 'Glacial'])
             mi, ma = ax[i, j].get_xlim()
@@ -269,6 +312,7 @@ for i in range(2):
 plt.tight_layout()
 plt.savefig('Figures/BOXPLOT.jpg', dpi=300)
 
+# Plot Authors Boxplot (BOXPLOT-AUTHORS)
 fig, ax = plt.subplots(2, 3, figsize=(15, 12))
 for i in range(2):
     for j in range(3):
@@ -276,12 +320,10 @@ for i in range(2):
                              labeltop=False, right=True, labelright=False,
                              left=True, bottom=True, labelsize=14)
         if i == 0:
-            sns.boxplot(x='author', y='PC' + str(j+1), # hue='transport',
+            sns.boxplot(x='author', y='PC' + str(j+1),
                         order=['this study', 'Smith_2018',
                                'Kalinska-Nartisa_2017', 'Sweet_2016',
                                'Stevic_2015', 'Mahaney_1996'],
-                        # hue_order=['Aeolian', 'Fluvial', 'Glacial'],
-                        # palette=['#D55E00', '#0072B2', '#F0E442'],
                         data=modern_aa, ax=ax[i, j], saturation=1)
             ax[i, j].add_patch(Rectangle((-0.5, 6.5), 6, 1, clip_on=False,
                                          fill=True, facecolor='#648FFF',
@@ -310,12 +352,10 @@ for i in range(2):
                               horizontalalignment='center',
                               verticalalignment='center')
         elif i == 1:
-            sns.boxplot(x='author', y='PC' + str(j+1), # hue='transport',
+            sns.boxplot(x='author', y='PC' + str(j+1),
                         order=['this study', 'Smith_2018',
                                'Kalinska-Nartisa_2017', 'Sweet_2016',
                                'Stevic_2015', 'Mahaney_1996'],
-                        # hue_order=['Aeolian', 'Fluvial', 'Glacial'],
-                        # palette=['#D55E00', '#0072B2', '#F0E442'],
                         data=modern_me, ax=ax[i, j], saturation=1)
             if j == 0:
                 ax[i, j].add_patch(Rectangle((-1.5, -5), 0.5, 11, 
