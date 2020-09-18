@@ -81,40 +81,40 @@ legend_elements = [
                           label='Mahaney et al. (1996)'),
                    Line2D([0], [0], marker='P', color='w',
                           markerfacecolor='w', markeredgecolor='k', ms=10,
-                          label='Nartišs and Kalińska-Nartiša\n(2017)')
-                   # Line2D([0], [0], marker='D', color='w',
-                   #        markerfacecolor='w', markeredgecolor='k', ms=10,
-                   #        label='Deane (2010)'),
-                   # Line2D([0], [0], marker='X', color='w',
-                   #        markerfacecolor='w', markeredgecolor='k', ms=10,
-                   #        label='Sweet and Soreghan (2010)'),
-                   # Line2D([0], [0], marker='d', color='w',
-                   #        markerfacecolor='w', markeredgecolor='k', ms=10,
-                   #        label='Mahaney et al. (2001)'),
-                   # Line2D([0], [0], marker='v', color='w',
-                   #        markerfacecolor='w', markeredgecolor='k', ms=10,
-                   #        label='Mahaney and Kalm (1995)'),
-                 #   Patch(facecolor='#ffffff', label=''),
-                 #   Patch(facecolor='#ffffff', label=''),
-                 #   Patch(facecolor='#ffffff', label=''),
-                 #   Patch(facecolor='#ffffff', label='Arc-Shaped Steps'),
-                 #   Patch(facecolor='#ffffff', label='Conchoidal Fractures'),
-                 #   Patch(facecolor='#ffffff', label='Linear Steps'),
-                 #   Patch(facecolor='#ffffff', label='Sharp Angular Features'),
-                 #   Patch(facecolor='#ffffff',
-                 #         label='Subparallel Linear Fractures'),
-                 #   Patch(facecolor='#ffffff', label=''),
-                 #   Patch(facecolor='#ffffff', label='Edge Rounding'),
-                 #   Patch(facecolor='#ffffff',
-                 #         label='V-Shaped Percussion Cracks'),
-                 #   Patch(facecolor='#ffffff', label=''),
-                 #   Patch(facecolor='#ffffff', label='Curved Grooves'),
-                 # # Patch(facecolor='#ffffff', label=''),
-                 # # Patch(facecolor='#ffffff', label='Precipitated Features'),
-                 #   Patch(facecolor='#ffffff', label=''),
-                 #   Patch(facecolor='#ffffff', label='Low Relief'),
-                 #   Patch(facecolor='#ffffff', label='Medium Relief'),
-                 #   Patch(facecolor='#ffffff', label='High Relief')
+                          label='Nartišs and Kalińska-Nartiša\n(2017)'),
+                   Line2D([0], [0], marker='D', color='w',
+                           markerfacecolor='w', markeredgecolor='k', ms=10,
+                           label='Deane (2010)'),
+                   Line2D([0], [0], marker='X', color='w',
+                           markerfacecolor='w', markeredgecolor='k', ms=10,
+                           label='Sweet and Soreghan (2010)'),
+                   Line2D([0], [0], marker='d', color='w',
+                           markerfacecolor='w', markeredgecolor='k', ms=10,
+                           label='Mahaney et al. (2001)'),
+                   Line2D([0], [0], marker='v', color='w',
+                           markerfacecolor='w', markeredgecolor='k', ms=10,
+                           label='Mahaney and Kalm (1995)'),
+                   Patch(facecolor='#ffffff', label=''),
+                   Patch(facecolor='#ffffff', label=''),
+                   Patch(facecolor='#ffffff', label=''),
+                   Patch(facecolor='#ffffff', label='Arc-Shaped Steps'),
+                   Patch(facecolor='#ffffff', label='Conchoidal Fractures'),
+                   Patch(facecolor='#ffffff', label='Linear Steps'),
+                   Patch(facecolor='#ffffff', label='Sharp Angular Features'),
+                   Patch(facecolor='#ffffff',
+                          label='Subparallel Linear Fractures'),
+                   Patch(facecolor='#ffffff', label=''),
+                   Patch(facecolor='#ffffff', label='Edge Rounding'),
+                   Patch(facecolor='#ffffff',
+                          label='V-Shaped Percussion Cracks'),
+                   Patch(facecolor='#ffffff', label=''),
+                   Patch(facecolor='#ffffff', label='Curved Grooves'),
+                  # Patch(facecolor='#ffffff', label=''),
+                  # Patch(facecolor='#ffffff', label='Precipitated Features'),
+                   Patch(facecolor='#ffffff', label=''),
+                   Patch(facecolor='#ffffff', label='Low Relief'),
+                   Patch(facecolor='#ffffff', label='Medium Relief'),
+                   Patch(facecolor='#ffffff', label='High Relief')
                    ]
 legend = plt.legend(handles=legend_elements, frameon=True)
 plt.axis('off') # keep the matplotlib axis out of the legend
@@ -169,7 +169,7 @@ def textplot(ax, tex, x, y, PCx, PCy, label):
     label = string; text label
     """
     adj = 0.01  # Adjustment factor
-    s = 16
+    s = 24
     p = len(tex)
     b_k = np.zeros(p)
     total = np.zeros(p)
@@ -355,30 +355,32 @@ def PCAplot(dataframe, tex, label, groupby='transport'):
     
     # Plot PCA ordination w/reference first, then sample
     fig, ax = plt.subplots(3, 3, figsize=(20, 20)) # Set up axes
+    ls = 24
     for i in range(3):
         for j in range(3):
-            ax[i, j].tick_params(axis='both', which='major', top=True,
-                                 labeltop=False, right=True, labelright=False,
-                                 labelsize=14)
+            ax[i, j].tick_params(axis='both', direction='in', which='major',
+                             top=True, labeltop=False, right=True,
+                             labelright=False, left=True, bottom=True,
+                             labelsize=ls)
             if j == 0:
                 ax[i, j].set_xlim(-5, 6)
                 ax[i, j].set_ylim(-5, 6)
                 if i == 0:
-                    ax[i, j].set_xlabel('PC1', size=20)
-                    ax[i, j].set_ylabel('PC2', size=20)
+                    ax[i, j].set_xlabel('PC1', size=ls)
+                    ax[i, j].set_ylabel('PC2', size=ls)
                     ax[i, j].text(-4.5, 4.5, 'A1', size=40)
                     ax[i, j].add_patch(Rectangle((-5, 6+0.5), 11, 1,
                                                  clip_on=False, fill=True,
                                                  facecolor='#648FFF',
                                                  edgecolor='w'))
-                    ax[i, j].text(0.5, 7, 'Modern Samples', size=20, c='w',
+                    ax[i, j].text(0.5, 7, 'Modern Samples', size=ls, c='w',
                                   horizontalalignment='center',
                                   verticalalignment='center', weight='bold')
-                    ax[i, j].add_patch(Rectangle((-5-3, -5), 1, 11,
+                    ax[i, j].add_patch(Rectangle((-5-3.1, -5), 1, 11,
                                                  clip_on=False, fill=True,
                                                  facecolor='#648FFF',
                                                  edgecolor='w'))
-                    ax[i, j].text(-7.5, 0.5, 'PC1 v. PC2', size=20, c='w',
+                    ax[i, j].text(-7.5, 0.5, 'PC1 v. PC2', size=ls, c='w',
                                   horizontalalignment='center',
                                   verticalalignment='center', weight='bold',
                                   rotation=90)
@@ -405,14 +407,14 @@ def PCAplot(dataframe, tex, label, groupby='transport'):
                                            ax[i, j], n_std=2, facecolor='none',
                                            edgecolor=c, alpha=1, lw=2)
                 elif i == 1:
-                    ax[i, j].set_xlabel('PC1', size=20)
-                    ax[i, j].set_ylabel('PC3', size=20)
+                    ax[i, j].set_xlabel('PC1', size=ls)
+                    ax[i, j].set_ylabel('PC3', size=ls)
                     ax[i, j].text(-4.5, 4.5, 'B1', size=40)
-                    ax[i, j].add_patch(Rectangle((-5-3, -5), 1, 11,
+                    ax[i, j].add_patch(Rectangle((-5-3.1, -5), 1, 11,
                                                  clip_on=False, fill=True,
                                                  facecolor='#648FFF',
                                                  edgecolor='w'))
-                    ax[i, j].text(-7.5, 0.5, 'PC1 v. PC3', size=20, c='w',
+                    ax[i, j].text(-7.5, 0.5, 'PC1 v. PC3', size=ls, c='w',
                                   horizontalalignment='center',
                                   verticalalignment='center', weight='bold',
                                   rotation=90)
@@ -439,14 +441,14 @@ def PCAplot(dataframe, tex, label, groupby='transport'):
                                            ax[i, j], n_std=2, facecolor='none',
                                            edgecolor=c, alpha=1, lw=2)
                 elif i == 2:
-                    ax[i, j].set_xlabel('PC2', size=20)
-                    ax[i, j].set_ylabel('PC3', size=20)
+                    ax[i, j].set_xlabel('PC2', size=ls)
+                    ax[i, j].set_ylabel('PC3', size=ls)
                     ax[i, j].text(-4.5, 4.5, 'C1', size=40)
-                    ax[i, j].add_patch(Rectangle((-5-3, -5), 1, 11,
+                    ax[i, j].add_patch(Rectangle((-5-3.1, -5), 1, 11,
                                                  clip_on=False, fill=True,
                                                  facecolor='#648FFF',
                                                  edgecolor='w'))
-                    ax[i, j].text(-7.5, 0.5, 'PC2 v. PC3', size=20, c='w',
+                    ax[i, j].text(-7.5, 0.5, 'PC2 v. PC3', size=ls, c='w',
                                   horizontalalignment='center',
                                   verticalalignment='center', weight='bold',
                                   rotation=90)
@@ -476,14 +478,15 @@ def PCAplot(dataframe, tex, label, groupby='transport'):
                 ax[i, j].set_xlim(-0.6, 0.6)
                 ax[i, j].set_ylim(-0.7, 0.7)
                 if i == 0:
-                    ax[i, j].set_xlabel('PC1', size=20)
-                    # ax[i, j].set_ylabel('PC2', size=20)
+                    ax[i, j].set_xlabel('PC1', size=ls)
+                    # ax[i, j].set_ylabel('PC2', size=ls)
                     ax[i, j].text(-0.545, 0.51, 'A2', size=40)
                     ax[i, j].add_patch(Rectangle((-0.6, 0.7+0.064), 1.2, 0.127,
                                                  clip_on=False, fill=True,
                                                  facecolor='#648FFF',
                                                  edgecolor='w'))
-                    ax[i, j].text(0, 0.7+0.064+(0.127/2), 'PC Loadings', size=20, c='w',
+                    ax[i, j].text(0, 0.7+0.064+(0.127/2), 'PC Loadings',
+                                  size=ls, c='w',
                                   horizontalalignment='center',
                                   verticalalignment='center', weight='bold')
                     for labels, PC1, PC2 in zip(loading_scores_ref['microtextures'],
@@ -494,8 +497,8 @@ def PCAplot(dataframe, tex, label, groupby='transport'):
                                        head_width=0.02, overhang=0.05)
                         textplot(ax[i, j], tex, PC1, PC2, 0, 1, labels)
                 elif i == 1:
-                    ax[i, j].set_xlabel('PC1', size=20)
-                    # ax[i, j].set_ylabel('PC3', size=20)
+                    ax[i, j].set_xlabel('PC1', size=ls)
+                    # ax[i, j].set_ylabel('PC3', size=ls)
                     ax[i, j].text(-0.545, 0.51, 'B2', size=40)
                     for labels, PC1, PC3 in zip(loading_scores_ref['microtextures'],
                                                 loading_scores_ref['PC1'],
@@ -505,8 +508,8 @@ def PCAplot(dataframe, tex, label, groupby='transport'):
                                  overhang=0.05)
                         textplot(ax[i, j], tex, PC1, PC3, 0, 2, labels)
                 elif i == 2:
-                    ax[i, j].set_xlabel('PC2', size=20)
-                    # ax[i, j].set_ylabel('PC3', size=20)
+                    ax[i, j].set_xlabel('PC2', size=ls)
+                    # ax[i, j].set_ylabel('PC3', size=ls)
                     ax[i, j].text(-0.545, 0.51, 'C2', size=40)
                     for labels, PC2, PC3 in zip(loading_scores_ref['microtextures'],
                                                 loading_scores_ref['PC2'],
@@ -519,14 +522,14 @@ def PCAplot(dataframe, tex, label, groupby='transport'):
                 ax[i, j].set_xlim(-5, 6)
                 ax[i, j].set_ylim(-5, 6)
                 if i == 0:
-                    ax[i, j].set_xlabel('PC1', size=20)
-                    # ax[i, j].set_ylabel('PC2', size=20)
+                    ax[i, j].set_xlabel('PC1', size=ls)
+                    # ax[i, j].set_ylabel('PC2', size=ls)
                     ax[i, j].text(-4.5, 4.5, 'A3', size=40)
                     ax[i, j].add_patch(Rectangle((-5, 6+0.5), 11, 1,
                                                  clip_on=False, fill=True,
                                                  facecolor='#648FFF',
                                                  edgecolor='w'))
-                    ax[i, j].text(0.5, 7, 'Ancient Samples', size=20, c='w',
+                    ax[i, j].text(0.5, 7, 'Ancient Samples', size=ls, c='w',
                                   horizontalalignment='center',
                                   verticalalignment='center', weight='bold')
                     for k in range(len(reference.data)):
@@ -563,8 +566,8 @@ def PCAplot(dataframe, tex, label, groupby='transport'):
                                          edgecolors='k', s=200, alpha=1,
                                          linewidths=1)
                 elif i == 1:
-                    ax[i, j].set_xlabel('PC1', size=20)
-                    # ax[i, j].set_ylabel('PC3', size=20)
+                    ax[i, j].set_xlabel('PC1', size=ls)
+                    # ax[i, j].set_ylabel('PC3', size=ls)
                     ax[i, j].text(-4.5, 4.5, 'B3', size=40)
                     for k in range(len(reference.data)):
                         if groupby == 'transport':
@@ -600,8 +603,8 @@ def PCAplot(dataframe, tex, label, groupby='transport'):
                                           edgecolors='k', s=200, alpha=1,
                                           linewidths=1)
                 elif i == 2:
-                    ax[i, j].set_xlabel('PC2', size=20)
-                    # ax[i, j].set_ylabel('PC3', size=20)
+                    ax[i, j].set_xlabel('PC2', size=ls)
+                    # ax[i, j].set_ylabel('PC3', size=ls)
                     ax[i, j].text(-4.5, 4.5, 'C3', size=40)
                     for k in range(len(reference.data)):
                         if groupby == 'transport':

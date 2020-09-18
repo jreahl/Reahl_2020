@@ -175,17 +175,19 @@ def Sensitivityplot(datalist, tex, label):
     
     # Plot PCA ordination w/reference first, then sample
     fig, ax = plt.subplots(3, 3, figsize=(20, 20)) # Set up axes
+    ls = 24
     for i in range(3):
         for j in range(3):
-            ax[i, j].tick_params(axis='both', which='major', top=True,
-                                 labeltop=False, right=True, labelright=False,
-                                 labelsize=14)
+            ax[i, j].tick_params(axis='both', direction='in', which='major',
+                             top=True, labeltop=False, right=True,
+                             labelright=False, left=True, bottom=True,
+                             labelsize=ls)
             ax[i, j].set_xlim(-5, 6)
             ax[i, j].set_ylim(-5, 6)
             data_m = modern_list[j]
             data_a = ancient_list[j]
             if i == 0:
-                ax[i, j].set_xlabel('PC1', size=20)
+                ax[i, j].set_xlabel('PC1', size=ls)
                 ax[i, j].text(-4.5, 4.5, 'A'+str(j+1), size=40)
                 for k in range(len(data_m)):
                     fk = data_m['color'].loc[k]
@@ -216,19 +218,19 @@ def Sensitivityplot(datalist, tex, label):
                                          edgecolors='k', s=500, alpha=1,
                                          linewidths=1)
                 if j == 0:
-                    ax[i, j].set_ylabel('PC2', size=20)
+                    ax[i, j].set_ylabel('PC2', size=ls)
                     ax[i, j].add_patch(Rectangle((-5, 6+0.5), 11, 1,
                                                  clip_on=False, fill=True,
                                                  facecolor='#648FFF',
                                                  edgecolor='w'))
-                    ax[i, j].text(0.5, 7, 'Lower Bound', size=20, c='w',
+                    ax[i, j].text(0.5, 7, 'Lower Bound', size=ls, c='w',
                                   horizontalalignment='center',
                                   verticalalignment='center', weight='bold')
-                    ax[i, j].add_patch(Rectangle((-5-3, -5), 1, 11,
+                    ax[i, j].add_patch(Rectangle((-5-3.1, -5), 1, 11,
                                                  clip_on=False, fill=True,
                                                  facecolor='#648FFF',
                                                  edgecolor='w'))
-                    ax[i, j].text(-7.5, 0.5, 'PC1 v. PC2', size=20, c='w',
+                    ax[i, j].text(-7.5, 0.5, 'PC1 v. PC2', size=ls, c='w',
                                   horizontalalignment='center',
                                   verticalalignment='center', weight='bold',
                                   rotation=90)
@@ -237,7 +239,7 @@ def Sensitivityplot(datalist, tex, label):
                                                  clip_on=False, fill=True,
                                                  facecolor='#648FFF',
                                                  edgecolor='w'))
-                    ax[i, j].text(0.5, 7, 'Middle Bound', size=20, c='w',
+                    ax[i, j].text(0.5, 7, 'Middle Bound', size=ls, c='w',
                                   horizontalalignment='center',
                                   verticalalignment='center', weight='bold')
                 if j == 2:
@@ -245,11 +247,11 @@ def Sensitivityplot(datalist, tex, label):
                                                  clip_on=False, fill=True,
                                                  facecolor='#648FFF',
                                                  edgecolor='w'))
-                    ax[i, j].text(0.5, 7, 'Upper Bound', size=20, c='w',
+                    ax[i, j].text(0.5, 7, 'Upper Bound', size=ls, c='w',
                                   horizontalalignment='center',
                                   verticalalignment='center', weight='bold')
             if i == 1:
-                ax[i, j].set_xlabel('PC1', size=20)
+                ax[i, j].set_xlabel('PC1', size=ls)
                 ax[i, j].text(-4.5, 4.5, 'B'+str(j+1), size=40)
                 for k in range(len(data_m)):
                     fk = data_m['color'].loc[k]
@@ -279,17 +281,17 @@ def Sensitivityplot(datalist, tex, label):
                                          edgecolors='k', s=500, alpha=1,
                                          linewidths=1)
                 if j == 0:
-                    ax[i, j].set_ylabel('PC3', size=20)
-                    ax[i, j].add_patch(Rectangle((-5-3, -5), 1, 11,
+                    ax[i, j].set_ylabel('PC3', size=ls)
+                    ax[i, j].add_patch(Rectangle((-5-3.1, -5), 1, 11,
                                                  clip_on=False, fill=True,
                                                  facecolor='#648FFF',
                                                  edgecolor='w'))
-                    ax[i, j].text(-7.5, 0.5, 'PC1 v. PC3', size=20, c='w',
+                    ax[i, j].text(-7.5, 0.5, 'PC1 v. PC3', size=ls, c='w',
                                   horizontalalignment='center',
                                   verticalalignment='center', weight='bold',
                                   rotation=90)
             if i == 2:
-                ax[i, j].set_xlabel('PC2', size=20)
+                ax[i, j].set_xlabel('PC2', size=ls)
                 ax[i, j].text(-4.5, 4.5, 'C'+str(j+1), size=40)
                 for k in range(len(data_m)):
                     fk = data_m['color'].loc[k]
@@ -319,12 +321,12 @@ def Sensitivityplot(datalist, tex, label):
                                          edgecolors='k', s=500, alpha=1,
                                          linewidths=1)
                 if j == 0:
-                    ax[i, j].set_ylabel('PC3', size=20)
-                    ax[i, j].add_patch(Rectangle((-5-3, -5), 1, 11,
+                    ax[i, j].set_ylabel('PC3', size=ls)
+                    ax[i, j].add_patch(Rectangle((-5-3.1, -5), 1, 11,
                                                  clip_on=False, fill=True,
                                                  facecolor='#648FFF',
                                                  edgecolor='w'))
-                    ax[i, j].text(-7.5, 0.5, 'PC2 v. PC3', size=20, c='w',
+                    ax[i, j].text(-7.5, 0.5, 'PC2 v. PC3', size=ls, c='w',
                                   horizontalalignment='center',
                                   verticalalignment='center', weight='bold',
                                   rotation=90)

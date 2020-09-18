@@ -214,7 +214,7 @@ statistics.to_excel('Data_XLSX/STATISTICS-AUTHOR.xlsx')
 
 # Sort ancient data by transport list below (e.g. Bravika first,
 # aeolian second, etc.)
-transport = ['Bravika', 'Aeolian', 'Fluvial', 'Glacial']
+transport = ['Fluvial', 'Glacial', 'Aeolian', 'Bravika']
 ancient_aa.transport = ancient_aa.transport.astype('category')
 ancient_aa.transport.cat.set_categories(transport, inplace=True)
 ancient_me.transport = ancient_me.transport.astype('category')
@@ -223,165 +223,158 @@ ancient_aa = ancient_aa.sort_values(['transport'])
 ancient_me = ancient_me.sort_values(['transport'])
 
 # Plot Transport Boxplot (BOXPLOT-TRANSPORT)
-fig, ax = plt.subplots(2, 3, figsize=(15, 10))
-for i in range(2):
-    for j in range(3):
-        ax[i, j].tick_params(axis='both', which='major', top=True,
-                             labeltop=False, right=True, labelright=False,
-                             left=True, bottom=True, labelsize=14)
-        if i == 0:
-            sns.boxplot(x='transport', y='PC' + str(j+1), order=transport,
-                        palette=['#000000', '#D55E00', '#0072B2', '#F0E442'],
+fig, ax = plt.subplots(3, 2, figsize=(11, 15))
+for i in range(3):
+    for j in range(2):
+        ax[i, j].tick_params(axis='both', direction='in', which='major',
+                             top=True, labeltop=False, right=True,
+                             labelright=False, left=True, bottom=True,
+                             labelsize=20)
+        if j == 0:
+            sns.boxplot(x='transport', y='PC' + str(i+1), order=transport,
+                        palette=['#0072B2', '#F0E442', '#D55E00', '#000000'],
                         data=modern_aa, ax=ax[i, j], saturation=1,
                         notch=False, bootstrap=10000)
             for k in range(len(ancient_aa)):
                 ax[i, j].scatter(ancient_aa['transport'].iloc[k],
-                                 ancient_aa['PC' + str(j+1)].iloc[k],
+                                 ancient_aa['PC' + str(i+1)].iloc[k],
                                  facecolors=ancient_aa['color'].iloc[k],
                                  edgecolors='k',
                                  s=200,
                                  marker=ancient_aa['marker'].iloc[k])
             ax[i, j].set_xticks(np.arange(0, 4))
-            ax[i, j].set_xticklabels(['Bråvika', 'Aeolian', 'Fluvial', 'Glacial'])
-            mi, ma = ax[i, j].get_xlim()
-            ax[i, j].add_patch(Rectangle((mi, 6.5),
+            ax[i, j].set_xticklabels(['Fluvial', 'Glacial', 'Aeolian',
+                                      'Bråvika'])
+            ax[i, j].add_patch(Rectangle((-1.165, -5), 0.33, 11, 
+                                         clip_on=False, fill=True,
+                                         facecolor='#648FFF', edgecolor='w'))
+            ax[i, j].text(-1, 0.5, 'PC'+str(i+1), size=24, c='w',
+                              horizontalalignment='center',
+                              verticalalignment='center', weight='bold',
+                              rotation=90)
+            ax[i, j].text(-0.25, 5, 'A'+str(i+1), size=30,
+                          horizontalalignment='center',
+                          verticalalignment='center')
+            if i == 0:
+                mi, ma = ax[i, j].get_xlim()
+                ax[i, j].add_patch(Rectangle((mi, 6.5),
                                           ma-mi,
                                           1, clip_on=False,
                                           fill=True, facecolor='#648FFF',
                                           edgecolor='w'))
-            ax[i, j].text(mi + (ma-mi)/2, 7, 'PC'+str(j+1), size=18, c='w',
+                ax[i, j].text(mi + (ma-mi)/2, 7, 'All Textures', size=24, c='w',
                           horizontalalignment='center',
                           verticalalignment='center', weight='bold',
                           rotation=0)
-            if j == 0:
-                ax[i, j].add_patch(Rectangle((-1.165, -5), 0.33, 11, 
-                                         clip_on=False, fill=True,
-                                         facecolor='#648FFF', edgecolor='w'))
-                ax[i, j].text(-1, 1, 'All Textures', size=18, c='w',
-                              horizontalalignment='center',
-                              verticalalignment='center', weight='bold',
-                              rotation=90)
-                ax[i, j].text(0.1, 5, 'A1', size=30,
-                              horizontalalignment='center',
-                              verticalalignment='center')
-            elif j == 1:
-                ax[i, j].text(0.1, 5, 'A2', size=30,
-                              horizontalalignment='center',
-                              verticalalignment='center')
-            elif j == 2:
-                ax[i, j].text(0.1, 5, 'A3', size=30,
-                              horizontalalignment='center',
-                              verticalalignment='center')
-        elif i == 1:
-            sns.boxplot(x='transport', y='PC' + str(j+1), order=transport,
-                        palette=['#000000', '#D55E00', '#0072B2', '#F0E442'],
+        elif j == 1:
+            sns.boxplot(x='transport', y='PC' + str(i+1), order=transport,
+                        palette=['#0072B2', '#F0E442', '#D55E00', '#000000'],
                         data=modern_me, ax=ax[i, j], saturation=1,
                         notch=False, bootstrap=10000)
-            for k in range(len(ancient_aa)):
+            for k in range(len(ancient_me)):
                 ax[i, j].scatter(ancient_me['transport'].iloc[k],
-                                 ancient_me['PC' + str(j+1)].iloc[k],
+                                 ancient_me['PC' + str(i+1)].iloc[k],
                                  facecolors=ancient_me['color'].iloc[k],
                                  edgecolors='k',
                                  s=200,
                                  marker=ancient_me['marker'].iloc[k])
             ax[i, j].set_xticks(np.arange(0, 4))
-            ax[i, j].set_xticklabels(['Bråvika', 'Aeolian', 'Fluvial', 'Glacial'])
-            if j == 0:
-                ax[i, j].add_patch(Rectangle((-1.165, -5), 0.33, 11, 
-                                         clip_on=False, fill=True,
-                                         facecolor='#648FFF', edgecolor='w'))
-                ax[i, j].text(-1, 1, 'Mechanical', size=18, c='w',
-                              horizontalalignment='center',
-                              verticalalignment='center', weight='bold',
-                              rotation=90)
-                ax[i, j].text(0.1, 5, 'B1', size=30,
-                              horizontalalignment='center',
-                              verticalalignment='center')
-            elif j == 1:
-                ax[i, j].text(0.1, 5, 'B2', size=30,
-                              horizontalalignment='center',
-                              verticalalignment='center')
-            elif j == 2:
-                ax[i, j].text(0.1, 5, 'B3', size=30,
-                              horizontalalignment='center',
-                              verticalalignment='center')
-        ax[i, j].set_ylim(-5, 6)
-        ax[i, j].set_ylabel('')
-        ax[i, j].set_xlabel('')
-
-plt.tight_layout()
-plt.savefig('Figures/BOXPLOT.jpg', dpi=300)
-
-# Plot Authors Boxplot (BOXPLOT-AUTHORS)
-fig, ax = plt.subplots(2, 3, figsize=(15, 12))
-for i in range(2):
-    for j in range(3):
-        ax[i, j].tick_params(axis='both', which='major', top=True,
-                             labeltop=False, right=True, labelright=False,
-                             left=True, bottom=True, labelsize=14)
-        if i == 0:
-            sns.boxplot(x='author', y='PC' + str(j+1),
-                        order=['this study', 'Smith_2018',
-                               'Kalinska-Nartisa_2017', 'Sweet_2016',
-                               'Stevic_2015', 'Mahaney_1996'],
-                        data=modern_aa, ax=ax[i, j], saturation=1)
-            ax[i, j].add_patch(Rectangle((-0.5, 6.5), 6, 1, clip_on=False,
-                                         fill=True, facecolor='#648FFF',
-                                         edgecolor='w'))
-            ax[i, j].text(2.5, 7, 'PC'+str(j+1), size=18, c='w',
+            ax[i, j].set_xticklabels(['Fluvial', 'Glacial', 'Aeolian',
+                                      'Bråvika'])
+            ax[i, j].text(-0.25, 5, 'B'+str(i+1), size=30,
+                          horizontalalignment='center',
+                          verticalalignment='center')
+            if i == 0:
+                mi, ma = ax[i, j].get_xlim()
+                ax[i, j].add_patch(Rectangle((mi, 6.5),
+                                          ma-mi,
+                                          1, clip_on=False,
+                                          fill=True, facecolor='#648FFF',
+                                          edgecolor='w'))
+                ax[i, j].text(mi + (ma-mi)/2, 7, 'Mechanical', size=24, c='w',
                           horizontalalignment='center',
                           verticalalignment='center', weight='bold',
                           rotation=0)
-            if j == 0:
-                ax[i, j].add_patch(Rectangle((-1.5, -5), 0.5, 11, 
-                                         clip_on=False, fill=True,
-                                         facecolor='#648FFF', edgecolor='w'))
-                ax[i, j].text(-1.25, 1, 'All Textures', size=18, c='w',
-                              horizontalalignment='center',
-                              verticalalignment='center', weight='bold',
-                              rotation=90)
-                ax[i, j].text(-0, 5, 'A1', size=30,
-                              horizontalalignment='center',
-                              verticalalignment='center')
-            elif j == 1:
-                ax[i, j].text(-0, 5, 'A2', size=30,
-                              horizontalalignment='center',
-                              verticalalignment='center')
-            elif j == 2:
-                ax[i, j].text(-0, 5, 'A3', size=30,
-                              horizontalalignment='center',
-                              verticalalignment='center')
-        elif i == 1:
-            sns.boxplot(x='author', y='PC' + str(j+1),
-                        order=['this study', 'Smith_2018',
-                               'Kalinska-Nartisa_2017', 'Sweet_2016',
-                               'Stevic_2015', 'Mahaney_1996'],
-                        data=modern_me, ax=ax[i, j], saturation=1)
-            if j == 0:
-                ax[i, j].add_patch(Rectangle((-1.5, -5), 0.5, 11, 
-                                         clip_on=False, fill=True,
-                                         facecolor='#648FFF', edgecolor='w'))
-                ax[i, j].text(-1.25, 1, 'Mechanical', size=18, c='w',
-                              horizontalalignment='center',
-                              verticalalignment='center', weight='bold',
-                              rotation=90)
-                ax[i, j].text(-0, 5, 'B1', size=30,
-                              horizontalalignment='center',
-                              verticalalignment='center')
-            elif j == 1:
-                ax[i, j].text(-0, 5, 'B2', size=30,
-                              horizontalalignment='center',
-                              verticalalignment='center')
-            elif j == 2:
-                ax[i, j].text(-0, 5, 'B3', size=30,
-                              horizontalalignment='center',
-                              verticalalignment='center')
         ax[i, j].set_ylim(-5, 6)
         ax[i, j].set_ylabel('')
         ax[i, j].set_xlabel('')
-        ax[i, j].set_xticks(np.arange(len(authors)))
-        ax[i, j].set_xticklabels(authors, rotation=23, ha='right')
-
 plt.tight_layout()
-plt.savefig('Figures/BOXPLOT_AUTHOR.jpg', dpi=300)
+plt.savefig('Figures/BOXPLOT-TRANSPORT.jpg', dpi=300)
+
+# Plot Authors Boxplot (BOXPLOT-AUTHORS)
+fig, ax = plt.subplots(3, 2, figsize=(10, 15))
+for i in range(3):
+    for j in range(2):
+        ax[i, j].tick_params(axis='both', direction='in', which='major',
+                             top=True, labeltop=False, right=True,
+                             labelright=False, left=True, bottom=True,
+                             labelsize=14)
+        if j == 0:
+            sns.boxplot(x='author', y='PC' + str(i+1),
+                        order=['this study', 'Smith_2018',
+                               'Kalinska-Nartisa_2017', 'Sweet_2016',
+                               'Stevic_2015', 'Mahaney_1996'],
+                        data=modern_aa, ax=ax[i, j], saturation=1,
+                        notch=False, bootstrap=10000)
+            ax[i, j].set_xticks(np.arange(0, 6))
+            ax[i, j].set_xticklabels(['this study', 'Smith et al. (2018)',
+                                      'Kalińska-Nartiša et al. (2017)',
+                                      'Sweet and Brannan (2016)',
+                                      'Stevic (2015)',
+                                      'Mahaney et al. (1996)'], rotation=20,
+                                     ha='right')
+            ax[i, j].add_patch(Rectangle((-1.5, -5), 0.5, 11, 
+                                         clip_on=False, fill=True,
+                                         facecolor='#648FFF', edgecolor='w'))
+            ax[i, j].text(-1.225, 0.5, 'PC'+str(i+1), size=18, c='w',
+                              horizontalalignment='center',
+                              verticalalignment='center', weight='bold',
+                              rotation=90)
+            ax[i, j].text(-0, 5, 'A'+str(i+1), size=30,
+                          horizontalalignment='center',
+                          verticalalignment='center')
+            if i == 0:
+                mi, ma = ax[i, j].get_xlim()
+                ax[i, j].add_patch(Rectangle((mi, 6.5),
+                                          ma-mi,
+                                          1, clip_on=False,
+                                          fill=True, facecolor='#648FFF',
+                                          edgecolor='w'))
+                ax[i, j].text(mi + (ma-mi)/2, 7, 'All Textures', size=18, c='w',
+                          horizontalalignment='center',
+                          verticalalignment='center', weight='bold')
+        elif j == 1:
+            sns.boxplot(x='author', y='PC' + str(i+1),
+                        order=['this study', 'Smith_2018',
+                               'Kalinska-Nartisa_2017', 'Sweet_2016',
+                               'Stevic_2015', 'Mahaney_1996'],
+                        data=modern_me, ax=ax[i, j], saturation=1,
+                        notch=False, bootstrap=10000)
+            ax[i, j].set_xticks(np.arange(0, 6))
+            ax[i, j].set_xticklabels(['this study', 'Smith et al. (2018)',
+                                      'Kalińska-Nartiša et al. (2017)',
+                                      'Sweet and Brannan (2016)',
+                                      'Stevic (2015)',
+                                      'Mahaney et al. (1996)'], rotation=20,
+                                     ha='right')
+            ax[i, j].text(-0, 5, 'B'+str(i+1), size=30,
+                          horizontalalignment='center',
+                          verticalalignment='center')
+            if i == 0:
+                mi, ma = ax[i, j].get_xlim()
+                ax[i, j].add_patch(Rectangle((mi, 6.5),
+                                          ma-mi,
+                                          1, clip_on=False,
+                                          fill=True, facecolor='#648FFF',
+                                          edgecolor='w'))
+                ax[i, j].text(mi + (ma-mi)/2, 7, 'Mechanical', size=18, c='w',
+                          horizontalalignment='center',
+                          verticalalignment='center', weight='bold',
+                          rotation=0)
+        ax[i, j].set_ylim(-5, 6)
+        ax[i, j].set_ylabel('')
+        ax[i, j].set_xlabel('')
+plt.tight_layout()
+plt.savefig('Figures/BOXPLOT-AUTHOR.jpg', dpi=200)
+
 plt.show()

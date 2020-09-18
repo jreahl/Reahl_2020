@@ -9,7 +9,6 @@ used in this dataset.
 
 """
 # Import packages
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.colors as col
@@ -162,7 +161,7 @@ def heatmap(sampleage):
             else:
                 a.set_xticklabels('')
     plt.tight_layout() # Reduce overall white space in figure
-    plt.savefig('Figures/HEATMAP-' + sampleage + '.jpg', dpi=300) # Save!
+    plt.savefig('Figures/HEATMAP-' + sampleage + '.jpg', dpi=200) # Save!
     plt.show() # Show plot in console
 
 # Run heatmap function to generate plots
