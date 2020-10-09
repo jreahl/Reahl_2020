@@ -10,6 +10,7 @@ used in this dataset.
 """
 # Import packages
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as col
 from matplotlib.patches import Rectangle
@@ -78,7 +79,7 @@ def heatmap(sampleage):
     
     for d, c, a, co, t in zip(data, cmaps, ax, transcolors, transmodes):
         # Plot the data to the hundreths decimal place:
-        sns.heatmap(d, annot=True, cmap=c, cbar=False, ax=a, vmin=0, vmax=1,
+        sns.heatmap(d, annot=False, cmap=c, cbar=False, ax=a, vmin=0, vmax=1,
                     yticklabels=False, fmt='.2f')
         
         # Manually annotate y-labels (would use yticklabels=True in
@@ -87,10 +88,10 @@ def heatmap(sampleage):
         for s in range(len(list(d.index))):
             if 'AVG' not in d.index[s]:
                 a.text(-0.25, s+0.5, d.index[s], horizontalalignment='right',
-                       verticalalignment='center', fontsize=11)
+                       verticalalignment='center', fontsize=16)
             elif 'AVG' in d.index[s]:
                 a.text(-0.25, s+0.5, d.index[s], horizontalalignment='right',
-                       verticalalignment='center', fontsize=14,
+                       verticalalignment='center', fontsize=18,
                        fontweight='bold')
             a.set_ylabel('')
             
@@ -158,6 +159,7 @@ def heatmap(sampleage):
             # Create x label @ bottom of last subplot; otherwise no xticklabels
             elif a == ax[-1]:
                 a.set_xlabel('Microtextures', size=20)
+                a.set_xticklabels(microtextures, size=20)
             else:
                 a.set_xticklabels('')
     plt.tight_layout() # Reduce overall white space in figure
@@ -165,5 +167,7 @@ def heatmap(sampleage):
     plt.show() # Show plot in console
 
 # Run heatmap function to generate plots
+# heatmap('MODERN')
+# heatmap('ANCIENT')
 heatmap('MODERN')
 heatmap('ANCIENT')
